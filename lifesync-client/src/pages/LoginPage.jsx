@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion as Motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import AuthLayout from "../components/AuthLayout";
 import { API_PATHS } from "../servcies/apiPaths";
 import api from "../servcies/axios";
@@ -125,12 +125,12 @@ const LoginPage = () => {
             </button>
           </div>
           <div className="flex justify-end">
-            <a
-              href="#"
+            <Link
+              to="/forgot-password"
               className="text-xs font-semibold text-indigo-500 hover:text-indigo-600 hover:underline"
             >
               Forgot Password?
-            </a>
+            </Link>
           </div>
         </div>
 
