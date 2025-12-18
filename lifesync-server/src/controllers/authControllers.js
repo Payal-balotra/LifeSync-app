@@ -7,9 +7,9 @@ const {
   generateRefreshToken,
 } = require("../utils/token");
 
-/* ======================
-   SIGN UP
-====================== */
+ 
+
+// Sign Up Logic 
 const handleSignUp = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -23,11 +23,11 @@ const handleSignUp = async (req, res) => {
       return res.status(409).json({ message: "User already exists" });
     }
 
-    // 🔴 Password is plain text → model hashes it
+  
     const user = await User.create({
       name,
       email,
-      password,
+      password, // password hashes in model 
     });
 
     const accessToken = generateAccessToken(user._id);
@@ -60,9 +60,7 @@ const handleSignUp = async (req, res) => {
   }
 };
 
-/* ======================
-   LOGIN
-====================== */
+//Login Logic
 const handleLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -71,14 +69,14 @@ const handleLogin = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // 🔴 Must explicitly select password
+
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // 🔴 Use model method
+    // Use model method
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
@@ -114,9 +112,7 @@ const handleLogin = async (req, res) => {
   }
 };
 
-/* ======================
-   REFRESH TOKEN
-====================== */
+
 const refreshToken = async (req, res) => {
   const refreshToken = req.cookies.refreshToken;
 
@@ -145,9 +141,8 @@ const refreshToken = async (req, res) => {
   }
 };
 
-/* ======================
-   LOGOUT
-====================== */
+
+//Logout
 const logout = async (req, res) => {
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
@@ -155,15 +150,14 @@ const logout = async (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 };
 
-/* ======================
-   FORGOT PASSWORD
-====================== */
+
+//Forgot password logic 
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
   const user = await User.findOne({ email });
 
-  // 🔴 Same response always (security)
+  // Same response always (security)
   if (!user) {
     return res.status(200).json({
       message:
@@ -182,7 +176,6 @@ const forgotPassword = async (req, res) => {
   await user.save();
 
   const clientUrl = process.env.CLIENT_URL || "http://localhost:5176";
-  console.log("DEBUG: Password Reset clientUrl:", clientUrl); // Debug log
   const resetLink = `${clientUrl}/reset-password/${resetToken}`;
 
   await sendEmail({
@@ -199,13 +192,10 @@ const forgotPassword = async (req, res) => {
   res.status(200).json({
     message:
       "If an account with this email exists, a password reset link has been sent.",
-    resetToken
   });
 };
 
-/* ======================
-   RESET PASSWORD
-====================== */
+//   RESET PASSWORD
 const resetPassword = async (req, res) => {
   try {
     const { token } = req.params;
@@ -217,7 +207,7 @@ const resetPassword = async (req, res) => {
         .json({ message: "Password must be at least 6 characters" });
     }
 
-    const hashedToken = crypto
+    const hashedToken = crypto         
       .createHash("sha256")
       .update(token)
       .digest("hex");
@@ -233,7 +223,7 @@ const resetPassword = async (req, res) => {
         .json({ message: "Reset link is invalid or expired" });
     }
 
-    // 🔴 Plain text → model hashes
+    // Plain text → model hashes
     user.password = password;
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;

@@ -42,14 +42,13 @@ const SignupPage = () => {
 
     setLoading(true);
     try {
-      // Note: Adjust payload if backend expects 'confirmPassword' or specific structure
       const response = await api.post(API_PATHS.AUTH.SIGNUP, {
         name: formData.name,
         email: formData.email,
         password: formData.password,
       });
       console.log(response.data);
-      navigate("/spaces"); // Or login page depending on flow
+      navigate("/spaces"); 
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed");
     } finally {

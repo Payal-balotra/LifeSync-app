@@ -4,11 +4,11 @@
     AUTH :{
         LOGIN :"/api/auth/login" ,
         SIGNUP : "/api/auth/signup",
-        LOGOUT : "/api/auth/signup",
+        LOGOUT : "/api/auth/logout",
         FORGOT_PASSWORD: "/api/auth/forgot-password",
-        RESET_PASSWORD : "/api/auth/reset-password"
-
-    },
+        RESET_PASSWORD : "/api/auth/reset-password",
+        ME: "api/users/me",
+      },
 
 
    }
