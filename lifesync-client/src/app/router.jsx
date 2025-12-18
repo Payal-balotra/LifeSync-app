@@ -14,5 +14,6 @@ export const router = createBrowserRouter([
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password/:token", element: <ResetPassword /> },
   { path: "/dashboard/:spaceId", element: <ProtectedRoute><Dashboard /></ProtectedRoute> },
-  { path: "/spaces", element: <ProtectedRoute><Spaces /></ProtectedRoute> },
+  { path: "/spaces", element: <Spaces /> }
+  
 ]);
