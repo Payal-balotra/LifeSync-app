@@ -3,6 +3,7 @@ const MemberShip = require("../models/MemberShip");
 
 
 const sendInvite= async(req,res)=>{
+
    const {email,role} = req.body;
    const {spaceId} = req.params;
 
@@ -10,6 +11,7 @@ const sendInvite= async(req,res)=>{
     return res.status(400).json({ message: "Email and role required" });
   }
 
+  
   const existingInvite = await Invite.findOne({
     email,
     spaceId,
@@ -33,27 +35,38 @@ const sendInvite= async(req,res)=>{
 }
 
 
-const acceptInvite = async(req,res)=>{
-    const invite =  await Invite.findById(req.params.inviteId);
+const acceptInvite = async (req, res) => {
+  const invite = await Invite.findById(req.params.inviteId);
 
-    if(!invite || !invite.status == "pending"){
-            return res.status(400).json({ message: "Invalid invite" });
+  if (!invite || invite.status !== "pending") {
+    return res.status(400).json({ message: "Invalid invite" });
+  }
 
-    }
+  if (invite.email !== req.user.email) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
 
-    // create membership 
+  const existingMember = await MemberShip.findOne({
+    userId: req.user.id,
+    spaceId: invite.spaceId,
+  });
 
-    await MemberShip.create({
-        userId : req.user.id,
-        spaceId : invite.spaceId,
-        role : invite.role
-    })
-      invite.status = "accepted";
+  if (existingMember) {
+    return res.status(400).json({ message: "Already a member" });
+  }
+
+  await MemberShip.create({
+    userId: req.user.id,
+    spaceId: invite.spaceId,
+    role: invite.role,
+  });
+
+  invite.status = "accepted";
   await invite.save();
 
   res.json({ message: "Invite accepted" });
+};
 
-}
 
 const rejectInvite = async (req, res) => {
   const invite = await Invite.findById(req.params.inviteId);
@@ -69,6 +82,16 @@ const rejectInvite = async (req, res) => {
 };
 
 
-module.exports = {sendInvite,acceptInvite,rejectInvite}
+const getMyInvites = async(req,res)=>{
+  const invites  = await Invite.find({
+    email : req.user.email,
+    status: "pending" ,}).populate("spaceId","name createdBy").populate("invitedBy", "name email").sort({createdBy : -1});
+    
+
+    res.status(200).json(invites);
+}
+
+
+module.exports = {sendInvite,acceptInvite,rejectInvite,getMyInvites}
 
 

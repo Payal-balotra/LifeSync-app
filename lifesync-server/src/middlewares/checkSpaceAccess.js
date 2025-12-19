@@ -9,7 +9,7 @@ const checkSpaceAccess = async (req, res, next) => {
     }
 
     const membership = await Membership.findOne({
-      userId: req.user.id,
+      userId: req.user._id,
       spaceId,
     });
 

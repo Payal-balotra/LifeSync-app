@@ -4,16 +4,12 @@ const router = express.Router();
 const auth = require("../middlewares/authMiddleware");
 const checkSpaceAccess = require("../middlewares/checkSpaceAccess");
 const requireRole = require("../middlewares/requireRole");
-const {sendInvite,acceptInvite,rejectInvite} = require("../controllers/inviteController")
+const {sendInvite,acceptInvite,rejectInvite,getMyInvites} = require("../controllers/inviteController")
 
 
-// OWNER sends invite
 router.post("/:spaceId/invite",auth,checkSpaceAccess, requireRole("owner"), sendInvite);
-
-// user accepts invite
 router.post("/accept/:inviteId", auth, acceptInvite);
-
-// user rejects invite
 router.post("/reject/:inviteId", auth, rejectInvite);
+router.get("/my",auth,getMyInvites)
 
 module.exports = router;
