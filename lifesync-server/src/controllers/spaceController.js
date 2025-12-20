@@ -1,6 +1,5 @@
 const Space = require("../models/Space");
 const Membership = require("../models/MemberShip");
-const Task = require("../models/Task");
 const mongoose = require("mongoose");
 
 
@@ -11,11 +10,12 @@ const createSpace = async (req, res) => {
     createdBy: req.user._id,
   });
 
-  await Membership.create({
+   const membership = await Membership.create({
     userId: req.user._id,
     spaceId: space._id,
     role: "owner",
   });
+
 
   res.status(200).json(space);
 };
@@ -29,27 +29,8 @@ const getMySpaces = async (req, res) => {
   res.json(memberships);
 };
 
-const getTasks = async (req, res) => {
-  const { spaceId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(spaceId)) {
-   return res.status(400).json({ message: "Invalid space ID" });
- }
-
-  const membership = await Membership.findOne({
-    spaceId,
-    userId: req.user._id,
-  });
-
-  if (!membership) {
-    return res.status(403).json({ message: "Access denied" });
-  }
-
-  const tasks = await Task.find({ spaceId });
-  res.json(tasks);
-};
 
 const getSpaceMembers = async (req, res) => {
-  console.log("req.params:", req.params);
 const spaceId = req.params.spaceId?.trim();
   if (!mongoose.Types.ObjectId.isValid(spaceId)) {
    return res.status(400).json({ message: "Invalid space ID" });
@@ -135,7 +116,6 @@ const removeMember = async (req, res) => {
 module.exports = {
   createSpace,
   getMySpaces,
-  getTasks,
   getSpaceMembers,
   updateMemberRole,
   removeMember,

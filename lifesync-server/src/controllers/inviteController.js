@@ -1,53 +1,52 @@
 const Invite = require("../models/Invite");
 const MemberShip = require("../models/MemberShip");
 
+const sendInvite = async (req, res) => {
+  const { email, role } = req.body;
+  const { spaceId } = req.params;
 
-const sendInvite= async(req,res)=>{
-
-   const {email,role} = req.body;
-   const {spaceId} = req.params;
-
-    if (!email || !role) {
+  if (!email || !role) {
     return res.status(400).json({ message: "Email and role required" });
   }
 
-  
+  const normalizedEmail = email.trim().toLowerCase();
+
   const existingInvite = await Invite.findOne({
-    email,
+    email: normalizedEmail,
     spaceId,
     status: "pending",
-  })
+  });
 
-  
   if (existingInvite) {
     return res.status(400).json({ message: "Invite already sent" });
   }
 
   const invite = await Invite.create({
-    email ,
+    email: normalizedEmail,
     spaceId,
     role,
-    invitedBy :req.user.id
-  })
+    invitedBy: req.user._id,
+  });
 
-// email sending will come later
   res.status(201).json(invite);
-}
-
+};
 
 const acceptInvite = async (req, res) => {
-  const invite = await Invite.findById(req.params.inviteId);
+console.log("PARAMS:", req.params);
+console.log("USER EMAIL:", req.user.email);
 
-  if (!invite || invite.status !== "pending") {
+  const invite = await Invite.findOne({
+    _id: req.params.inviteId,
+    email: req.user.email.trim().toLowerCase(),
+    status: "pending",
+  });
+
+  if (!invite) {
     return res.status(400).json({ message: "Invalid invite" });
   }
 
-  if (invite.email !== req.user.email) {
-    return res.status(403).json({ message: "Not authorized" });
-  }
-
   const existingMember = await MemberShip.findOne({
-    userId: req.user.id,
+    userId: req.user._id,
     spaceId: invite.spaceId,
   });
 
@@ -56,7 +55,7 @@ const acceptInvite = async (req, res) => {
   }
 
   await MemberShip.create({
-    userId: req.user.id,
+    userId: req.user._id,
     spaceId: invite.spaceId,
     role: invite.role,
   });
@@ -66,7 +65,6 @@ const acceptInvite = async (req, res) => {
 
   res.json({ message: "Invite accepted" });
 };
-
 
 const rejectInvite = async (req, res) => {
   const invite = await Invite.findById(req.params.inviteId);
@@ -81,17 +79,21 @@ const rejectInvite = async (req, res) => {
   res.json({ message: "Invite rejected" });
 };
 
+const getMyInvites = async (req, res) => {
+  const invites = await Invite.find({
+    email: req.user.email.trim().toLowerCase(),
+    status: "pending",
+  })
+    .populate("spaceId", "name createdBy")
+    .populate("invitedBy", "name email")
+    .sort({ createdAt: -1 });
 
-const getMyInvites = async(req,res)=>{
-  const invites  = await Invite.find({
-    email : req.user.email,
-    status: "pending" ,}).populate("spaceId","name createdBy").populate("invitedBy", "name email").sort({createdBy : -1});
-    
+  res.status(200).json(invites);
+};
 
-    res.status(200).json(invites);
-}
-
-
-module.exports = {sendInvite,acceptInvite,rejectInvite,getMyInvites}
-
-
+module.exports = {
+  sendInvite,
+  acceptInvite,
+  rejectInvite,
+  getMyInvites,
+};

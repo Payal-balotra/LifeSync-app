@@ -5,10 +5,12 @@ const memebershipSchema = new mongoose.Schema({
     userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
+    required: true,
   },
   spaceId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Space",
+    required: true,
   },
   role: {
     type: String,

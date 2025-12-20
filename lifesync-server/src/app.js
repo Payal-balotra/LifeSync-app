@@ -4,7 +4,8 @@ const cookieParser = require("cookie-parser");
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
 const spaceRoutes = require("./routes/spaceRoutes")
-const inviteRoutes = require("./routes/inviteRoutes")
+const inviteRoutes = require("./routes/inviteRoutes");
+const taskRoutes = require("./routes/taskRoutes")
 require("dotenv").config();
 const app = express();
 
@@ -28,7 +29,8 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/spaces",spaceRoutes)
-app.use("/api/invites",inviteRoutes)
+app.use("/api/invites",inviteRoutes);
+app.use("/api",taskRoutes);
 
 
 module.exports = app;
