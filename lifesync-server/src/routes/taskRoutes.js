@@ -36,7 +36,7 @@ router.patch(
   "/spaces/:spaceId/tasks/:taskId",
   auth,
   loadSpace,
-  requireRole("owner", "editor"),
+  requireRole("owner", "editor","viewer"),
   updateTask
 );
 
