@@ -55,7 +55,7 @@ const updateTask = async (req, res) => {
   const { taskId } = req.params;
   const userId = req.user._id;
 
-  // 1️⃣ Allow only specific fields
+  // 1 Allow only specific fields
   const allowedUpdates = [
     "title",
     "description",
@@ -70,7 +70,7 @@ const updateTask = async (req, res) => {
     }
   });
 
-  // 2️⃣ Fetch task
+  // 2 Fetch task
   const task = await Task.findOne({
     _id: taskId,
     space: req.space.spaceId,
@@ -80,7 +80,7 @@ const updateTask = async (req, res) => {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  // 3️⃣ Permission facts (compute ONCE)
+  // 3 Permission facts (compute ONCE)
   const role = req.space.role; // owner | editor | viewer
   const isAssigned = (task.assignedTo || [])
     .map((id) => id.toString())
@@ -91,7 +91,7 @@ const updateTask = async (req, res) => {
     updateKeys.length === 1 && updateKeys[0] === "status";
 
   /**
-   * 🔐 PERMISSION RULES
+   * PERMISSION RULES
    */
 
   // Owner / Editor → full access
@@ -123,7 +123,7 @@ const updateTask = async (req, res) => {
       .json({ message: "Not allowed to update this task" });
   }
 
-  // 4️⃣ Validate status value
+  // 4 Validate status value
   if (
     req.body.status &&
     !["todo", "in-progress", "done"].includes(req.body.status)
@@ -131,7 +131,7 @@ const updateTask = async (req, res) => {
     return res.status(400).json({ message: "Invalid status value" });
   }
 
-  // 5️⃣ Status transition rules
+  // 5 Status transition rules
   const allowedStatusTransitions = {
     todo: ["in-progress"],
     "in-progress": ["done"],
@@ -149,14 +149,14 @@ const updateTask = async (req, res) => {
     }
   }
 
-  // 6️⃣ Snapshot before update
+  // 6 Snapshot before update
   const oldTask = task.toObject();
 
-  // 7️⃣ Apply update
+  // 7 Apply update
   Object.assign(task, req.body);
   await task.save();
 
-  // 8️⃣ Build diff for activity log
+  // 8 Build diff for activity log
   const changes = {};
 
   // status diff
@@ -193,7 +193,7 @@ const updateTask = async (req, res) => {
     }
   }
 
-  // 9️⃣ Log activity only if something changed
+  // 9 Log activity only if something changed
   if (Object.keys(changes).length > 0) {
     await activityLogger({
       space: req.space.spaceId,

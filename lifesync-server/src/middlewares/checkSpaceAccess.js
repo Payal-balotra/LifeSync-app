@@ -2,10 +2,11 @@ const Membership = require("../models/MemberShip");
 
 const checkSpaceAccess = async (req, res, next) => {
   try {
-    const { spaceId } = req.params;
+    const spaceId = req.params.spaceId;
 
+    // 🔒 Only run when spaceId exists
     if (!spaceId) {
-      return res.status(400).json({ message: "Space ID missing" });
+      return next();
     }
 
     const membership = await Membership.findOne({
@@ -24,6 +25,7 @@ const checkSpaceAccess = async (req, res, next) => {
 
     next();
   } catch (error) {
+    console.error("checkSpaceAccess error:", error);
     res.status(500).json({ message: "Space access check failed" });
   }
 };

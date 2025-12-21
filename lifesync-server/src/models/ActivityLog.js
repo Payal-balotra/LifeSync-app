@@ -27,7 +27,7 @@ const activityLogSchema = new mongoose.Schema(
     entityType: {
       type: String,
       required: true,
-      enum: ["task"],
+      enum: ["task", "invite", "membership"],
     },
 
     entityId: {
@@ -37,6 +37,7 @@ const activityLogSchema = new mongoose.Schema(
 
     meta: {
       type: Object, // { title: "Buy groceries", status: "done" }
+       default: {},
     },
   },
   { timestamps: true }
