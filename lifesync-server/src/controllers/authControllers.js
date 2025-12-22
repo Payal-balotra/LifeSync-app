@@ -7,7 +7,7 @@ const {
   generateRefreshToken,
 } = require("../utils/token");
 
- 
+
 
 // Sign Up Logic 
 const handleSignUp = async (req, res) => {
@@ -23,7 +23,7 @@ const handleSignUp = async (req, res) => {
       return res.status(409).json({ message: "User already exists" });
     }
 
-  
+
     const user = await User.create({
       name,
       email,
@@ -207,7 +207,7 @@ const resetPassword = async (req, res) => {
         .json({ message: "Password must be at least 6 characters" });
     }
 
-    const hashedToken = crypto         
+    const hashedToken = crypto
       .createHash("sha256")
       .update(token)
       .digest("hex");
@@ -235,6 +235,12 @@ const resetPassword = async (req, res) => {
     res.status(500).json({ message: "Reset password failed" });
   }
 };
+/* ======================
+   GET CURRENT USER
+====================== */
+const getMe = async (req, res) => {
+  res.status(200).json(req.user);
+};
 
 module.exports = {
   handleSignUp,
@@ -243,4 +249,7 @@ module.exports = {
   logout,
   forgotPassword,
   resetPassword,
+  getMe,
 };
+
+

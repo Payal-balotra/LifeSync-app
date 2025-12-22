@@ -1,27 +1,15 @@
-import { useEffect } from "react";
-import useAuthStore from "./store/authStore";
-import api from "./servcies/axios";
-import { API_PATHS } from "./servcies/apiPaths";
+import React from "react";
 
-const App = ({children}) =>{
-  const { setUser, setLoading } = useAuthStore();
+import AppShell from "./app/AppShell";
+import { RouterProvider } from "react-router-dom";
+import router from "./app/router";
 
-  useEffect(()=>{
-    const loadUser = async()=>{
-        try{
-            const {data} = await api.get(API_PATHS.ME);
-            setUser(data)
-        }catch{
-            setUser(null)
-        }finally{
-            setLoading(false);
-        }   
-    }
-    loadUser();
-  },[])
-
-  return children
-
+function App() {
+  return (
+    <AppShell>
+      <RouterProvider router={router} />
+    </AppShell>
+  );
 }
 
-export default  App;
+export default App;

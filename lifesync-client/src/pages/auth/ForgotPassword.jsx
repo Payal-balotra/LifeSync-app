@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, ArrowRight, ArrowLeft } from "lucide-react";
-import AuthLayout from "../components/AuthLayout";
-import api from "../servcies/axios";
-import { API_PATHS } from "../servcies/apiPaths";
+import AuthLayout from "../../components/layouts/AuthLayout";
+import api from "../../services/axios";
+import { API_PATHS } from "../../services/apiPaths";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -23,7 +23,9 @@ const ForgotPassword = () => {
       const res = await api.post(API_PATHS.AUTH.FORGOT_PASSWORD, { email });
       setMessage(res.data.message || "Reset link sent!");
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong. Try again.");
+      setError(
+        err.response?.data?.message || "Something went wrong. Try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -35,7 +37,6 @@ const ForgotPassword = () => {
       subtitle="No worries! Enter your email to reset it."
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        
         {/* Email Input */}
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-600 ml-1">
@@ -71,24 +72,24 @@ const ForgotPassword = () => {
 
         {/* Success Message */}
         {message && (
-             <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
-            >
-                <span>🚀</span> {message}
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
+          >
+            <span>🚀</span> {message}
+          </motion.div>
         )}
 
         {/* Error Message */}
         {error && (
-            <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg"
-            >
-                {error}
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg"
+          >
+            {error}
+          </motion.div>
         )}
 
         {/* Submit Button */}
@@ -100,15 +101,15 @@ const ForgotPassword = () => {
           className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 group transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden relative"
         >
           {loading ? (
-             <div className="flex items-center gap-2">
-                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                 <span>Sending...</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Sending...</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
             </div>
           ) : (
-             <>
-                <span>Send Reset Link</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <>
+              <span>Send Reset Link</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </>
           )}
         </motion.button>
@@ -116,11 +117,11 @@ const ForgotPassword = () => {
 
       <div className="mt-8 text-center">
         <Link
-            to="/"
-            className="text-sm font-semibold text-slate-500 hover:text-indigo-600 flex items-center justify-center gap-2 transition-colors"
+          to="/"
+          className="text-sm font-semibold text-slate-500 hover:text-indigo-600 flex items-center justify-center gap-2 transition-colors"
         >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Login
+          <ArrowLeft className="w-4 h-4" />
+          Back to Login
         </Link>
       </div>
     </AuthLayout>

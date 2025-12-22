@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import FeatureShowcase from "./FeatureShowcase";
+import FeatureShowcase from "../ui/FeatureShowcase";
 
 const AuthLayout = ({ children, title = "Welcome Back! ", subtitle = "Enter your credentials to access the workspace." }) => {
   return (  

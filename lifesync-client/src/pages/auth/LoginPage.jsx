@@ -2,12 +2,14 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
-import AuthLayout from "../components/AuthLayout";
-import { API_PATHS } from "../servcies/apiPaths";
-import api from "../servcies/axios";
+import AuthLayout from "../../components/layouts/AuthLayout";
+import { API_PATHS } from "../../services/apiPaths";
+import api from "../../services/axios";
+import useAuthStore from "../../store/authStore";
 
 const LoginPage = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuthStore();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -35,7 +37,11 @@ const LoginPage = () => {
         password: formData.password,
       });
       console.log(response.data);
-      navigate("/spaces");
+      
+      // Update store
+      setUser(response.data.user);
+      
+      navigate("/app/spaces");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -136,9 +142,9 @@ const LoginPage = () => {
 
         {/* Error Message */}
         {error && (
-            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
-                {error}
-            </div>
+          <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
+            {error}
+          </div>
         )}
 
         {/* Submit Button */}
@@ -151,15 +157,15 @@ const LoginPage = () => {
         >
           {loading ? (
             <div className="flex items-center gap-2">
-                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                 <span>Logging in...</span>
-                 {/* Skeleton Shine Effect Overlay */}
-                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Logging in...</span>
+              {/* Skeleton Shine Effect Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
             </div>
           ) : (
             <>
-                <span>Login</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              <span>Login</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </>
           )}
         </motion.button>

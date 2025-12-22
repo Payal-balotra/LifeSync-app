@@ -1,19 +1,60 @@
 import React from "react";
-import { createBrowserRouter } from "react-router-dom";
-import LoginPage from "../pages/LoginPage";
-import SignupPage from "../pages/SignupPage";
-import Spaces from "../pages/Spaces";
-import Dashboard from "../pages/Dashboard";
-import ForgotPassword from "../pages/ForgotPassword";
-import ResetPassword from "../pages/ResetPassword";
-import ProtectedRoute from "../components/ProtectedRoutes";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 
-export const router = createBrowserRouter([
+// auth pages
+import LoginPage from "../pages/auth/LoginPage";
+import SignupPage from "../pages/auth/SignupPage";
+import ForgotPassword from "../pages/auth/ForgotPassword";
+import ResetPassword from "../pages/auth/ResetPassword";
+
+// guards & layouts
+import ProtectedRoute from "./guards/ProtectedRoutes";
+import AppLayout from "../components/layouts/AppLayout"
+import SpaceLayout from "../components/layouts/SpaceLayout";
+
+// space pages
+import SpacesDashboard from "../pages/spaces/SpaceDashboard";
+import SpaceHome from "../pages/spaces/SpaceHome";
+
+// future pages
+import TasksPage from "../pages/tasks/TaskPage";
+import ActivityPage from "../pages/activity/ActivityPage";
+
+const router = createBrowserRouter([
+  // ---------- AUTH ----------
   { path: "/", element: <LoginPage /> },
   { path: "/signup", element: <SignupPage /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password/:token", element: <ResetPassword /> },
-  { path: "/dashboard/:spaceId", element: <ProtectedRoute><Dashboard /></ProtectedRoute> },
-  { path: "/spaces", element: <Spaces /> }
-  
+
+  // ---------- APP (PROTECTED) ----------
+  {
+    path: "/app",
+    element: (
+      <ProtectedRoute>
+        <AppLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <Navigate to="/app/spaces" replace />,
+      },
+      {
+        path: "spaces",
+        element: <SpacesDashboard />,
+      },
+      {
+        path: "spaces/:spaceId",
+        element: <SpaceLayout />,
+        children: [
+          { index: true, element: <SpaceHome /> },
+          { path: "tasks", element: <TasksPage /> },
+          { path: "activity", element: <ActivityPage /> },
+        ],
+      },
+    ],
+  },
 ]);
+
+export default router;

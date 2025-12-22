@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
-import AuthLayout from "../components/AuthLayout";
-import api from "../servcies/axios";
-import { API_PATHS } from "../servcies/apiPaths";
+import AuthLayout from "../../components/layouts/AuthLayout";
+import api from "../../services/axios";
+import { API_PATHS } from "../../services/apiPaths";
 
 const ResetPassword = () => {
   const { token } = useParams();
@@ -37,27 +37,24 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      const res = await api.post(
-        `${API_PATHS.AUTH.RESET_PASSWORD}/${token}`,
-        { password }
-      );
+      const res = await api.post(`${API_PATHS.AUTH.RESET_PASSWORD}/${token}`, {
+        password,
+      });
 
       setSuccess(res.data.message || "Password reset successful");
       setTimeout(() => navigate("/"), 2000); // Redirect to login
     } catch (err) {
-      setError(err.response?.data?.message || "Reset link is invalid or expired");
+      setError(
+        err.response?.data?.message || "Reset link is invalid or expired"
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <AuthLayout
-      title="Reset Password"
-      subtitle="Create a new secure password."
-    >
+    <AuthLayout title="Reset Password" subtitle="Create a new secure password.">
       <form onSubmit={handleSubmit} className="space-y-6">
-        
         {/* New Password */}
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-600 ml-1">
@@ -75,7 +72,9 @@ const ResetPassword = () => {
           >
             <Lock
               className={`w-5 h-5 transition-colors ${
-                focusedField === "password" ? "text-purple-500" : "text-slate-400"
+                focusedField === "password"
+                  ? "text-purple-500"
+                  : "text-slate-400"
               }`}
             />
             <input
@@ -115,7 +114,9 @@ const ResetPassword = () => {
           >
             <Lock
               className={`w-5 h-5 transition-colors ${
-                focusedField === "confirmPassword" ? "text-purple-500" : "text-slate-400"
+                focusedField === "confirmPassword"
+                  ? "text-purple-500"
+                  : "text-slate-400"
               }`}
             />
             <input
@@ -133,31 +134,31 @@ const ResetPassword = () => {
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="text-slate-400 hover:text-slate-600 transition-colors"
             >
-               {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
         </div>
 
         {/* Success Message */}
         {success && (
-            <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
-            >
-                <span>🎉</span> {success}
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2"
+          >
+            <span>🎉</span> {success}
+          </motion.div>
         )}
 
         {/* Error Message */}
         {error && (
-            <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg"
-            >
-                {error}
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg"
+          >
+            {error}
+          </motion.div>
         )}
 
         {/* Submit Button */}
@@ -169,15 +170,15 @@ const ResetPassword = () => {
           className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 group transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden relative"
         >
           {loading ? (
-             <div className="flex items-center gap-2">
-                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                 <span>Updating...</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Updating...</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
             </div>
           ) : (
-             <>
-                <span>Reset Password</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <>
+              <span>Reset Password</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </>
           )}
         </motion.button>

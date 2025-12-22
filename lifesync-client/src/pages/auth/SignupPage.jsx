@@ -1,11 +1,18 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Mail, Lock, Eye, EyeOff, ArrowRight, User, CheckCircle2 } from "lucide-react";
-import AuthLayout from "../components/AuthLayout";
-import api from "../servcies/axios";
-import { API_PATHS } from "../servcies/apiPaths";
-
+import {
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  User,
+  CheckCircle2,
+} from "lucide-react";
+import AuthLayout from "../../components/layouts/AuthLayout";
+import api from "../../services/axios";
+import { API_PATHS } from "../../services/apiPaths";
 const SignupPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -31,13 +38,13 @@ const SignupPage = () => {
     setError("");
 
     if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match");
-        return;
+      setError("Passwords do not match");
+      return;
     }
 
     if (formData.password.length < 6) {
-        setError("Password must be at least 6 characters long");
-        return;
+      setError("Password must be at least 6 characters long");
+      return;
     }
 
     setLoading(true);
@@ -48,7 +55,7 @@ const SignupPage = () => {
         password: formData.password,
       });
       console.log(response.data);
-      navigate("/spaces"); 
+      navigate("/spaces");
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed");
     } finally {
@@ -62,7 +69,6 @@ const SignupPage = () => {
       subtitle="Join the workspace in seconds."
     >
       <form onSubmit={handleSignUp} className="space-y-5">
-        
         {/* Name Input */}
         <div className="space-y-1.5">
           <label className="text-sm font-semibold text-slate-600 ml-1">
@@ -175,7 +181,7 @@ const SignupPage = () => {
         </div>
 
         {/* Confirm Password Input */}
-         <div className="space-y-1.5">
+        <div className="space-y-1.5">
           <label className="text-sm font-semibold text-slate-600 ml-1">
             Confirm Password
           </label>
@@ -207,7 +213,7 @@ const SignupPage = () => {
               className="w-full bg-transparent border-none outline-none ml-3 text-slate-700 placeholder:text-slate-400 font-medium"
               required
             />
-             <button
+            <button
               type="button"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               className="text-slate-400 hover:text-slate-600 transition-colors"
@@ -219,13 +225,13 @@ const SignupPage = () => {
 
         {/* Error Message */}
         {error && (
-            <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg"
-            >
-                {error}
-            </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg"
+          >
+            {error}
+          </motion.div>
         )}
 
         {/* Submit Button */}
@@ -238,14 +244,14 @@ const SignupPage = () => {
         >
           {loading ? (
             <div className="flex items-center gap-2">
-                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                 <span>Creating...</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              <span>Creating...</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
             </div>
           ) : (
-             <>
-                <span>Sign Up</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            <>
+              <span>Sign Up</span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </>
           )}
         </motion.button>
