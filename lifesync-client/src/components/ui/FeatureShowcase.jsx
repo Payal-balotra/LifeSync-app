@@ -2,12 +2,12 @@ import React from "react";
 import { motion } from "framer-motion";
 import { 
   CheckCircle2, 
-  BarChart3, 
   Users, 
-  Calendar, 
-  Bell, 
-  ShieldCheck,
-  Zap
+  Briefcase, 
+  GraduationCap, 
+  Home,
+  MessageSquare,
+  Plus
 } from "lucide-react";
 
 const FeatureShowcase = () => {
@@ -33,102 +33,132 @@ const FeatureShowcase = () => {
             className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-400/20 rounded-full blur-3xl"
         />
 
-        {/* Floating Dashboard Card (Central) */}
+        {/* Main Floating Card - Spaces List */}
         <motion.div
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="relative z-10 w-80 bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl shadow-2xl p-6"
+            className="relative z-10 w-96 bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl shadow-2xl p-5"
         >
-            {/* Header Mockup */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center">
-                        <Zap className="w-5 h-5 text-indigo-600" />
+            {/* Header */}
+            <div className="flex items-center justify-between mb-5">
+                <h3 className="text-sm font-bold text-slate-700">My Spaces</h3>
+                <div className="p-1.5 bg-indigo-100 rounded-lg">
+                    <Plus className="w-4 h-4 text-indigo-600" />
+                </div>
+            </div>
+
+            {/* Space Items */}
+            <div className="space-y-3">
+                {/* Office Space */}
+                <motion.div 
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm border border-slate-100"
+                >
+                    <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
+                        <Briefcase className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="text-sm font-bold text-slate-800">Office Projects</p>
+                        <div className="flex items-center gap-2 mt-1">
+                            <div className="flex -space-x-2">
+                                <div className="w-5 h-5 rounded-full bg-slate-200 border-2 border-white" />
+                                <div className="w-5 h-5 rounded-full bg-slate-300 border-2 border-white" />
+                                <div className="w-5 h-5 rounded-full bg-slate-400 border-2 border-white" />
+                            </div>
+                            <span className="text-[10px] text-slate-500">8 tasks pending</span>
+                        </div>
+                    </div>
+                </motion.div>
+
+                {/* College Space */}
+                <motion.div 
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.4 }}
+                    className="flex items-center gap-3 p-3 bg-white/50 rounded-xl border border-slate-100/50"
+                >
+                    <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-orange-600">
+                        <GraduationCap className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="text-sm font-semibold text-slate-700">Final Year Group</p>
+                        <p className="text-[10px] text-slate-500">Active now</p>
+                    </div>
+                </motion.div>
+
+                {/* Flat Space */}
+                <motion.div 
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.6 }}
+                    className="flex items-center gap-3 p-3 bg-white/50 rounded-xl border border-slate-100/50"
+                >
+                    <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-green-600">
+                        <Home className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1">
+                        <p className="text-sm font-semibold text-slate-700">Flat 302</p>
+                        <p className="text-[10px] text-slate-500">Groceries updated</p>
+                    </div>
+                </motion.div>
+            </div>
+
+            {/* --- Floating Elements (Now relative to this card) --- */}
+
+            {/* Floating Activity Card */}
+            <motion.div
+                initial={{ x: 20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.8 }}
+                className="absolute -right-24 bottom-8 w-60 bg-white/90 backdrop-blur-md rounded-xl shadow-xl border border-white p-3 z-30 hidden md:block"
+            >
+                <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Live Activity</span>
+                </div>
+                <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center shrink-0">
+                        <Users className="w-4 h-4 text-indigo-600" />
                     </div>
                     <div>
-                        <div className="h-2 w-24 bg-slate-800/10 rounded mb-1" />
-                        <div className="h-2 w-16 bg-slate-800/10 rounded" />
+                        <p className="text-xs text-slate-700 leading-tight"><span className="font-bold">Sarah</span> completed a task</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Just now</p>
                     </div>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center">
-                    <Bell className="w-4 h-4 text-slate-400" />
-                </div>
-            </div>
+            </motion.div>
 
-            {/* Active Task Box */}
-            <div className="bg-white/50 p-3 rounded-xl border border-white/50 mb-4">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-semibold text-slate-600">Current Task</span>
-                    <span className="text-[10px] text-orange-500 bg-orange-100 px-2 py-0.5 rounded-full">In Progress</span>
-                </div>
-                <div className="flex items-center gap-2">
-                     <div className="w-4 h-4 rounded border-2 border-slate-300" />
-                     <div className="h-2 w-32 bg-slate-800/10 rounded" />
-                </div>
-            </div>
+            {/* Floating Notification 1 (Top Left) */}
+            <motion.div
+                animate={{ y: [-5, 5, -5] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-6 -left-12 bg-white/90 backdrop-blur-md px-3 py-2 rounded-full shadow-lg border border-white flex items-center gap-2 z-30 whitespace-nowrap"
+            >
+                <MessageSquare className="w-3.5 h-3.5 text-purple-500" />
+                <span className="text-xs font-semibold text-slate-700">New comment</span>
+            </motion.div>
 
-            {/* Poll Box */}
-            <div className="bg-white/50 p-3 rounded-xl border border-white/50 mb-6">
-                 <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold text-slate-600">Quick Poll</span>
-                    <BarChart3 className="w-4 h-4 text-indigo-500" />
-                </div>
-                <div className="space-y-2">
-                    <div className="w-full bg-slate-100 rounded-lg overflow-hidden h-6 relative">
-                        <div className="absolute top-0 left-0 h-full w-[75%] bg-indigo-100" />
-                        <span className="absolute top-1 left-2 text-[10px] font-medium text-indigo-700">Design Review (75%)</span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-lg overflow-hidden h-6 relative">
-                        <div className="absolute top-0 left-0 h-full w-[25%] bg-slate-200" />
-                         <span className="absolute top-1 left-2 text-[10px] font-medium text-slate-600">Testing (25%)</span>
-                    </div>
-                </div>
-            </div>
+            {/* Floating Notification 2 (Bottom Left) */}
+            <motion.div
+                animate={{ y: [5, -5, 5] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+                className="absolute -bottom-4 -left-8 bg-white/90 backdrop-blur-md px-3 py-2 rounded-full shadow-lg border border-white flex items-center gap-2 z-30 whitespace-nowrap"
+            >
+                <CheckCircle2 className="w-3.5 h-3.5 text-green-500" />
+                <span className="text-xs font-semibold text-slate-700">Task Done</span>
+            </motion.div>
 
-            {/* List Items */}
-            <div className="space-y-3">
-                {[1, 2, 3].map((i) => (
-                    <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.5 + i * 0.2 }}
-                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/50 transition-colors"
-                    >
-                        <div className="w-2 h-2 rounded-full bg-indigo-400" />
-                        <div className="flex-1 h-2 bg-slate-800/5 rounded" />
-                    </motion.div>
-                ))}
-            </div>
-        </motion.div>
-
-        {/* Floating Notification Pills */}
-        <motion.div
-            animate={{ y: [-10, 10, -10] }}
-            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute top-20 right-10 md:right-0 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white flex items-center gap-2 z-20"
-        >
-            <CheckCircle2 className="w-4 h-4 text-green-500" />
-            <span className="text-xs font-semibold text-slate-700">All Systems Operational</span>
-        </motion.div>
-
-        <motion.div
-            animate={{ y: [10, -10, 10] }}
-            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            className="absolute bottom-32 left-0 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white flex items-center gap-2 z-20"
-        >
-            <ShieldCheck className="w-4 h-4 text-purple-500" />
-            <span className="text-xs font-semibold text-slate-700">Encrypted Connection</span>
-        </motion.div>
-
-         <motion.div
-            animate={{ y: [-5, 5, -5] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-            className="absolute bottom-10 right-10 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-white flex items-center gap-2 z-20"
-        >
-            <Calendar className="w-4 h-4 text-orange-500" />
-            <span className="text-xs font-semibold text-slate-700">Meeting in 10m</span>
+            {/* Floating Notification 3 (Top Right) */}
+            <motion.div
+                animate={{ y: [-8, 8, -8] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                className="absolute -top-10 -right-4 bg-white/90 backdrop-blur-md px-3 py-2 rounded-full shadow-lg border border-white flex items-center gap-2 z-30 whitespace-nowrap"
+            >
+                <Users className="w-3.5 h-3.5 text-blue-500" />
+                <span className="text-xs font-semibold text-slate-700">New Member</span>
+            </motion.div>
         </motion.div>
     </div>
   );

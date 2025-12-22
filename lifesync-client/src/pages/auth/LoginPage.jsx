@@ -52,7 +52,7 @@ const LoginPage = () => {
   return (
     <AuthLayout
       title="Welcome Back!"
-      subtitle="Enter your credentials to access the workspace."
+      subtitle="Access your spaces for work, study, or home."
     >
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Email Input */}
