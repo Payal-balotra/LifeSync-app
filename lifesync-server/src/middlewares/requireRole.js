@@ -1,15 +1,14 @@
-
 const requireRole = (...allowedRoles) => {
   return (req, res, next) => {
-    // safety check
-    if (!req.space || !req.space.role) {
-      return res
-        .status(500)
-        .json({ message: "Space role not found in request" });
+    const role = req.space?.role;
+
+    if (!role) {
+      return res.status(403).json({
+        message: "Access denied",
+      });
     }
 
-    // permission check
-    if (!allowedRoles.includes(req.space.role)) {
+    if (!allowedRoles.includes(role)) {
       return res.status(403).json({
         message: "You do not have permission to perform this action",
       });

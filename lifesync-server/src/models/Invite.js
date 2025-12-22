@@ -26,6 +26,8 @@ const inviteSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+      token: String,
+  expiresAt: Date,
 
     status: {
       type: String,
