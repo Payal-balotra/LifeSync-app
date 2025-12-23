@@ -16,7 +16,7 @@ const AppLayout = () => {
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto p-6">
+      <main className="flex-1 w-full overflow-hidden flex flex-col">
         <Outlet />
       </main>
     </div>

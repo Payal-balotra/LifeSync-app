@@ -153,7 +153,7 @@ navigate("/app/spaces");
           whileTap={!loading ? { scale: 0.98 } : {}}
           type="submit"
           disabled={loading}
-          className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 group transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden relative"
+          className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold text-lg shadow-lg shadow-indigo-200 flex items-center justify-center gap-2 group transition-all disabled:opacity-70 disabled:cursor-not-allowed overflow-hidden relative cursor-pointer"
         >
           {loading ? (
             <div className="flex items-center gap-2">

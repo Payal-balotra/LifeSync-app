@@ -7,6 +7,8 @@ import CreateSpaceModal from "../../components/spaces/CreateSpaceModel";
 import { useState } from "react";
 import { Plus, Layers } from "lucide-react";
 
+import { Skeleton } from "../../components/ui/Skeleton";
+
 const SpacesDashboard = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -22,15 +24,29 @@ const SpacesDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center h-64 gap-4">
-        <div className="w-10 h-10 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin" />
-        <p className="text-slate-500 font-medium">Loading your spaces...</p>
+      <div className="max-w-7xl mx-auto p-6 space-y-8">
+        <div className="flex items-center justify-between">
+            <div>
+                <Skeleton className="h-8 w-48 mb-2" />
+                <Skeleton className="h-4 w-64" />
+            </div>
+            <Skeleton className="h-10 w-32 rounded-xl" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="h-48 rounded-2xl border border-slate-200 bg-white p-6 space-y-4">
+                <Skeleton className="h-14 w-full rounded-lg" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="max-w-7xl mx-auto p-6 space-y-8">
       {/* Header Section */}
       <div className="flex items-center justify-between">
         <div>
@@ -39,7 +55,7 @@ const SpacesDashboard = () => {
         </div>
         <button
           onClick={() => setOpen(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 transition-all hover:scale-105 active:scale-95"
+          className="cursor-pointer flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 transition-all hover:scale-105 active:scale-95"
         >
           <Plus className="w-5 h-5" />
           Create Space
@@ -48,7 +64,7 @@ const SpacesDashboard = () => {
 
       {/* Spaces Grid */}
       {spaces.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-10">
           {spaces.map((m) => (
             <SpaceCard
               key={m._id}
@@ -66,7 +82,7 @@ const SpacesDashboard = () => {
             <p className="text-slate-500 max-w-xs mt-2 mb-6">Create your first space to start organizing your tasks and notes.</p>
             <button
                 onClick={() => setOpen(true)}
-                className="text-indigo-600 font-semibold hover:underline"
+                className="cursor-pointer text-indigo-600 font-semibold hover:underline"
             >
                 Create a new space
             </button>

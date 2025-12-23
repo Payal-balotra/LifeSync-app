@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "../lib/utils"; // Assuming you have a cleanup/utils file, or I'll just use tailwind-merge directly if typically used, but clsx/tailwind-merge is safer.
+import { cn } from "../../lib/utils";
 
 function Skeleton({ className, ...props }) {
   return (

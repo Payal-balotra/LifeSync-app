@@ -55,9 +55,10 @@ const spaceId = req.params.spaceId?.trim();
 const updateMemberRole = async (req, res) => {
   const { spaceId, memberId } = req.params;
   const { role } = req.body;
-  if (!mongoose.Types.ObjectId.isValid(spaceId)) {
-   return res.status(400).json({ message: "Invalid space ID" });
- }
+
+  if (!["owner", "editor", "viewer"].includes(role)) {
+    return res.status(400).json({ message: "Invalid role" });
+  }
 
   const owner = await Membership.findOne({
     spaceId,
@@ -69,25 +70,35 @@ const updateMemberRole = async (req, res) => {
     return res.status(403).json({ message: "Only owner can change roles" });
   }
 
-  const member = await Membership.findById(memberId);
+  const member = await Membership.findOne({ _id: memberId, spaceId });
   if (!member) {
-    return res.status(404).json({ message: "Member not found" });
+    return res.status(404).json({ message: "Member not found in this space" });
   }
 
-  if (member.role === "owner") {
-    return res.status(400).json({ message: "Owner role cannot be changed" });
+  // prevent self role change
+  if (member.userId.toString() === req.user._id.toString()) {
+    return res.status(400).json({ message: "You cannot change your own role" });
+  }
+
+  // ownership transfer
+  if (role === "owner") {
+    owner.role = "editor";
+    member.role = "owner";
+
+    await owner.save();
+    await member.save();
+
+    return res.json({ message: "Ownership transferred successfully" });
   }
 
   member.role = role;
   await member.save();
 
-  res.json({ message: "Role updated" });
+  res.json({ message: "Role updated successfully" });
 };
+
 const removeMember = async (req, res) => {
   const { spaceId, memberId } = req.params;
-  if (!mongoose.Types.ObjectId.isValid(spaceId)) {
-   return res.status(400).json({ message: "Invalid space ID" });
- }
 
   const owner = await Membership.findOne({
     spaceId,
@@ -99,19 +110,55 @@ const removeMember = async (req, res) => {
     return res.status(403).json({ message: "Only owner can remove members" });
   }
 
-  const member = await Membership.findById(memberId);
+  const member = await Membership.findOne({ _id: memberId, spaceId });
   if (!member) {
-    return res.status(404).json({ message: "Member not found" });
+    return res.status(404).json({ message: "Member not found in this space" });
+  }
+
+  // prevent removing self
+  if (member.userId.toString() === req.user._id.toString()) {
+    return res.status(400).json({ message: "You cannot remove yourself" });
   }
 
   if (member.role === "owner") {
     return res.status(400).json({ message: "Owner cannot be removed" });
   }
 
-  await Membership.findByIdAndDelete(memberId);
+  await member.deleteOne();
 
-  res.json({ message: "Member removed" });
+  res.json({ message: "Member removed successfully" });
 };
+
+
+const getSpaceById = async (req, res) => {
+  const { spaceId } = req.params;
+
+  // validate ObjectId
+  if (!mongoose.Types.ObjectId.isValid(spaceId)) {
+    return res.status(400).json({ message: "Invalid space ID" });
+  }
+
+  // check membership (important)
+  const isMember = await Membership.findOne({
+    spaceId,
+    userId: req.user._id,
+  });
+
+  if (!isMember) {
+    return res.status(403).json({ message: "Access denied" });
+  }
+
+  // fetch space
+  const space = await Space.findById(spaceId).select("_id name createdAt");
+
+  if (!space) {
+    return res.status(404).json({ message: "Space not found" });
+  }
+
+  res.status(200).json(space);
+};
+
+
 
 module.exports = {
   createSpace,
@@ -119,4 +166,5 @@ module.exports = {
   getSpaceMembers,
   updateMemberRole,
   removeMember,
+  getSpaceById
 };

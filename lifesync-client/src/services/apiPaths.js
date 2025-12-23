@@ -13,6 +13,7 @@ export const API_PATHS = {
    SPACE: {
       CREATE: "/api/spaces",
       GET_ALL: "/api/spaces",
+      GET_ONE :(spaceId)=>`/api/spaces/${spaceId}`,
       GET_SPACE_MEMBERS: (spaceId) => `/api/spaces/${spaceId}/members`,
       UPDATE_MEMBER_ROLE: (spaceId, memberId) => `/api/spaces/${spaceId}/members/${memberId}`,
       REMOVE_MEMBER: (spaceId, memberId) => `/api/spaces/${spaceId}/members/${memberId}`
