@@ -40,8 +40,8 @@ const LoginPage = () => {
       
       // Update store
       setUser(response.data.user);
-      
-      navigate("/app/spaces");
+useAuthStore.getState().setLoading(false);
+navigate("/app/spaces");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {

@@ -7,13 +7,13 @@ export const API_PATHS = {
       LOGOUT: "/api/auth/logout",
       FORGOT_PASSWORD: "/api/auth/forgot-password",
       RESET_PASSWORD: (token) => `/api/auth/reset-password/${token}`,
-      REFERSH_TOKEN: "/api/auth/refresh",
-      ME: "/api/auth/me",
+      REFRESH_TOKEN : "/api/auth/refresh",
+      ME: "/api/auth/me", 
    },
    SPACE: {
       CREATE: "/api/spaces",
       GET_ALL: "/api/spaces",
-      GET_SPACE_MEMBERS: (spaceId) => `/api/spaces/${spaceId}`,
+      GET_SPACE_MEMBERS: (spaceId) => `/api/spaces/${spaceId}/members`,
       UPDATE_MEMBER_ROLE: (spaceId, memberId) => `/api/spaces/${spaceId}/members/${memberId}`,
       REMOVE_MEMBER: (spaceId, memberId) => `/api/spaces/${spaceId}/members/${memberId}`
 

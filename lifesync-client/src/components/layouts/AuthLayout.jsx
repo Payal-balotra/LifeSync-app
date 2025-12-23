@@ -16,7 +16,7 @@ const AuthLayout = ({ children, title, subtitle }) => {
         initial={{ opacity: 0, y: 20, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-[1200px] min-h-[600px] bg-white rounded-[32px] shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col lg:flex-row relative z-10 border border-white/50"
+        className="w-full max-w-300 min-h-150 bg-white rounded-4xl shadow-2xl shadow-slate-200/50 overflow-hidden flex flex-col lg:flex-row relative z-10 border border-white/50"
       >
         {/* Left Side - Form Section */}
         <div className="w-full lg:w-[45%] p-8 lg:p-12 flex flex-col justify-center bg-white relative">

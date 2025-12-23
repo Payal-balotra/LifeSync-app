@@ -1,11 +1,11 @@
-import {create} from "zustand";
+import { create } from "zustand";
 
-const useAuthStore = create((set)=>({
-    user : null,
-    loading :true,
+const useAuthStore = create((set) => ({
+  user: null,
+  loading: true,
 
-    setUser : (user) =>set({user}),
-    setLoading : (loading)=>set({loading})
+  setUser: (user) => set({ user }),
+  setLoading: (loading) => set({ loading }),
 }));
 
 export default useAuthStore;

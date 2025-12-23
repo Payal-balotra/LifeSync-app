@@ -6,9 +6,7 @@ import router from "./app/router";
 
 function App() {
   return (
-    <AppShell>
       <RouterProvider router={router} />
-    </AppShell>
   );
 }
 

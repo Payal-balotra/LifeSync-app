@@ -9,7 +9,7 @@ import ResetPassword from "../pages/auth/ResetPassword";
 
 // guards & layouts
 import ProtectedRoute from "./guards/ProtectedRoutes";
-import AppLayout from "../components/layouts/AppLayout"
+import AppLayout from "../components/layouts/AppLayout";
 import SpaceLayout from "../components/layouts/SpaceLayout";
 
 // space pages
@@ -19,6 +19,7 @@ import SpaceHome from "../pages/spaces/SpaceHome";
 // future pages
 import TasksPage from "../pages/tasks/TaskPage";
 import ActivityPage from "../pages/activity/ActivityPage";
+import AppShell from "./AppShell";
 
 const router = createBrowserRouter([
   // ---------- AUTH ----------
@@ -31,9 +32,11 @@ const router = createBrowserRouter([
   {
     path: "/app",
     element: (
-      <ProtectedRoute>
-        <AppLayout />
-      </ProtectedRoute>
+      <AppShell>
+        <ProtectedRoute>
+          <AppLayout />
+        </ProtectedRoute>
+      </AppShell>
     ),
     children: [
       {

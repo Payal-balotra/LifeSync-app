@@ -12,7 +12,8 @@ const SpaceLayout = () => {
   const { data: space, isLoading } = useQuery({
     queryKey: ["space", spaceId],
     queryFn: async () => {
-      const res = await api.get(API_PATHS.SPACE.GET_SPACE_MEMBERS(spaceId));
+      const res = await api.get(API_PATHS.SPACE.GET_ALL(spaceId));
+      console.log(res.data)
       return res.data;
     },
     enabled: !!spaceId,
