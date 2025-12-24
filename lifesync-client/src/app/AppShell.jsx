@@ -1,25 +1,22 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import api from "../services/axios";
-import { API_PATHS } from "../services/apiPaths";
 
 const AppShell = ({ children }) => {
-  const { setUser, setLoading } = useAuthStore();
+  const checkAuth = useAuthStore((s) => s.checkAuth);
+  const location = useLocation();
 
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const { data } = await api.get(API_PATHS.AUTH.ME);
-        setUser(data);
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
+    const isAuthPage =
+      location.pathname === "/" ||
+      location.pathname === "/signup" ||
+      location.pathname === "/forgot-password" ||
+      location.pathname.startsWith("/reset-password");
 
-    loadUser();
-  }, []);
+    if (isAuthPage) return;
+
+    checkAuth();
+  }, [checkAuth, location.pathname]);
 
   return children;
 };

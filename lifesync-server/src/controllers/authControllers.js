@@ -73,13 +73,13 @@ const handleLogin = async (req, res) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Email not found" });
     }
 
     // Use model method
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: "Incorrect Password" });
     }
 
     const accessToken = generateAccessToken(user._id);
@@ -144,8 +144,16 @@ const refreshToken = async (req, res) => {
 
 //Logout
 const logout = async (req, res) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
+  res.clearCookie("accessToken", {
+  httpOnly: true,
+  secure: false,
+  sameSite: "lax",
+});
+  res.clearCookie("refreshToken", {
+  httpOnly: true,
+  secure: false,
+  sameSite: "lax",
+});
 
   res.status(200).json({ message: "Logged out successfully" });
 };

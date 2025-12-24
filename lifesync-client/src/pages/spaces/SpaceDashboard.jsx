@@ -5,7 +5,7 @@ import { getMySpaces } from "../../services/space.service";
 import SpaceCard from "../../components/spaces/SpaceCard";
 import CreateSpaceModal from "../../components/spaces/CreateSpaceModel";
 import { useState } from "react";
-import { Plus, Layers } from "lucide-react";
+import { Plus, Layers, Mail } from "lucide-react";
 
 import { Skeleton } from "../../components/ui/Skeleton";
 
@@ -53,13 +53,22 @@ const SpacesDashboard = () => {
           <h2 className="text-3xl font-bold text-slate-800 tracking-tight">Your Spaces</h2>
           <p className="text-slate-500 mt-1">Manage your projects and collaborations</p>
         </div>
-        <button
-          onClick={() => setOpen(true)}
-          className="cursor-pointer flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 transition-all hover:scale-105 active:scale-95"
-        >
-          <Plus className="w-5 h-5" />
-          Create Space
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/app/spaces/my-invites")}
+            className="cursor-pointer flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold shadow-sm transition-all hover:scale-105 active:scale-95"
+          >
+            <Mail className="w-5 h-5" />
+            My Invites
+          </button>
+          <button
+            onClick={() => setOpen(true)}
+            className="cursor-pointer flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-semibold shadow-lg shadow-indigo-200 transition-all hover:scale-105 active:scale-95"
+          >
+            <Plus className="w-5 h-5" />
+            Create Space
+          </button>
+        </div>
       </div>
 
       {/* Spaces Grid */}

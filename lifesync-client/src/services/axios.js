@@ -10,41 +10,74 @@ const api = axios.create({
   },
 });
 
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error = null) => {
+  failedQueue.forEach(p => (error ? p.reject(error) : p.resolve()));
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
-  (response) => response,
+  (res) => res,
   async (error) => {
     const originalRequest = error.config;
 
-    // ❌ No response → network error
     if (!error.response) {
       return Promise.reject(error);
     }
 
-    const isUnauthorized = error.response.status === 401;
+    const status = error.response.status;
+    const url = originalRequest.url;
 
-    // 🔥 IMPORTANT: detect refresh endpoint
-    const isRefreshCall =
-      originalRequest.url === API_PATHS.AUTH.REFRESH_TOKEN;
+    /* ----------------------------------------------------
+       1️⃣ Ignore AUTH routes (VERY IMPORTANT)
+       ---------------------------------------------------- */
+    const isAuthRoute =
+      url.includes(API_PATHS.AUTH.LOGIN) ||
+      url.includes(API_PATHS.AUTH.SIGNUP) ||
+      url.includes(API_PATHS.AUTH.FORGOT_PASSWORD) ||
+      url.includes(API_PATHS.AUTH.RESET_PASSWORD);
 
-    // ❌ If refresh token itself failed → logout (NO retry)
-    if (isUnauthorized && isRefreshCall) {
-      window.location.href = "/";
+    if (status === 401 && isAuthRoute) {
+      //  DO NOT redirect
       return Promise.reject(error);
     }
 
-    // 🔁 Try refreshing access token ONLY ONCE
-    if (isUnauthorized && !originalRequest._retry) {
+    /* ----------------------------------------------------
+       2️⃣ Refresh token call failed → logout
+       ---------------------------------------------------- */
+    const isRefreshCall = url.includes(API_PATHS.AUTH.REFRESH_TOKEN);
+
+    if (status === 401 && isRefreshCall) {
+      window.location.href = "/"; // your login route
+      return Promise.reject(error);
+    }
+
+    /* ----------------------------------------------------
+       3️⃣ Normal protected API → try refresh ONCE
+       ---------------------------------------------------- */
+    if (status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      try {
-        // ⚠️ Use SAME axios instance OR plain axios with full URL
-        await api.post(API_PATHS.AUTH.REFRESH_TOKEN);
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        }).then(() => api(originalRequest));
+      }
 
-        // 🔁 Retry original request
+      isRefreshing = true;
+
+      try {
+        await api.post(API_PATHS.AUTH.REFRESH_TOKEN);
+        processQueue();
         return api(originalRequest);
-      } catch (refreshError) {
+      } catch (err) {
+        processQueue(err);
         window.location.href = "/";
-        return Promise.reject(refreshError);
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
 

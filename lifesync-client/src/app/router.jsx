@@ -20,6 +20,7 @@ import SpaceHome from "../pages/spaces/SpaceHome";
 import TasksPage from "../pages/tasks/TaskPage";
 import ActivityPage from "../pages/activity/ActivityPage";
 import AppShell from "./AppShell";
+import Members from "../pages/spaces/Member";
 
 const router = createBrowserRouter([
   // ---------- AUTH ----------
@@ -54,6 +55,7 @@ const router = createBrowserRouter([
           { index: true, element: <SpaceHome /> },
           { path: "tasks", element: <TasksPage /> },
           { path: "activity", element: <ActivityPage /> },
+          { path: "members", element: <Members /> },
         ],
       },
     ],

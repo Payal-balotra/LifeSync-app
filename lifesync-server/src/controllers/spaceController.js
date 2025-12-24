@@ -87,12 +87,35 @@ const updateMemberRole = async (req, res) => {
 
     await owner.save();
     await member.save();
+     await activityLogger({
+      space: spaceId,
+      user: req.user._id,
+      action: "ownership_transferred",
+      entityType: "membership",
+      entityId: member._id,
+      meta: {
+        from: owner.userId,
+        to: member.userId._id,
+      },
+    });
 
     return res.json({ message: "Ownership transferred successfully" });
   }
 
   member.role = role;
   await member.save();
+   await activityLogger({
+    space: spaceId,
+    user: req.user._id,
+    action: "member_role_changed",
+    entityType: "membership",
+    entityId: member._id,
+    meta: {
+      memberName: member.userId.name,
+      from: previousRole,
+      to: role,
+    },
+  });
 
   res.json({ message: "Role updated successfully" });
 };
@@ -125,6 +148,16 @@ const removeMember = async (req, res) => {
   }
 
   await member.deleteOne();
+    await activityLogger({
+    space: spaceId,
+    user: req.user._id,
+    action: "member_removed",
+    entityType: "membership",
+    entityId: memberId,
+    meta: {
+      memberName: member.userId.name,
+    },
+  });
 
   res.json({ message: "Member removed successfully" });
 };
