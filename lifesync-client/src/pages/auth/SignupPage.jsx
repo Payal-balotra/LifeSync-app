@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Mail,
@@ -13,8 +13,15 @@ import {
 import AuthLayout from "../../components/layouts/AuthLayout";
 import api from "../../services/axios";
 import { API_PATHS } from "../../services/apiPaths";
+import { useLocation } from "react-router-dom";
+ 
+
+
 const SignupPage = () => {
+
+
   const navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -54,8 +61,13 @@ const SignupPage = () => {
         email: formData.email,
         password: formData.password,
       });
-      console.log(response.data);
-      navigate("/spaces");
+    const inviteId = new URLSearchParams(location.search).get("invite");
+
+    if (inviteId) {
+      navigate(`/accept-invite/${inviteId}`);
+    } else {
+      navigate("/app/spaces");
+    }
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed");
     } finally {

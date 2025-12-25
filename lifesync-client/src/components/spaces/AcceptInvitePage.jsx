@@ -14,14 +14,11 @@ const AcceptInvitePage = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("AcceptInvitePage debug: loading=", loading, "user=", user);
     if (loading) return;
     if (!user) {
       navigate(`/?invite=${token}`);
       return;
     }
-
-    // ✅ Logged in → accept invite
     const acceptInvite = async () => {
       try {
         const res = await axios.post(

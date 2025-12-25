@@ -8,7 +8,6 @@ import api from "../../services/axios";
 import useAuthStore from "../../store/authStore";
 import { useLocation } from "react-router-dom";
 
-
 const LoginPage = () => {
   const location = useLocation();
 
@@ -39,18 +38,17 @@ const LoginPage = () => {
         email: formData.email,
         password: formData.password,
       });
-      
+
       // Update store
       setUser(response.data.user);
-     useAuthStore.getState().setLoading(false);
-    const inviteId = new URLSearchParams(location.search).get("invite");
+      useAuthStore.getState().setLoading(false);
+      const inviteId = new URLSearchParams(location.search).get("invite");
 
-if (inviteId) {
-  navigate(`/accept-invite/${inviteId}`);
-} else {
-  navigate("/app/spaces");
-}
-
+      if (inviteId) {
+        navigate(`/accept-invite/${inviteId}`);
+      } else {
+        navigate("/app/spaces");
+      }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -184,7 +182,13 @@ if (inviteId) {
         <p className="text-slate-500 text-sm">
           Don't have an account?{" "}
           <Link
-            to="/signup"
+            to={
+              new URLSearchParams(location.search).get("invite")
+                ? `/signup?invite=${new URLSearchParams(location.search).get(
+                    "invite"
+                  )}`
+                : "/signup"
+            }
             className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline"
           >
             Create Account
