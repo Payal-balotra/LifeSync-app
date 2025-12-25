@@ -9,6 +9,7 @@ import MembersList from "../members/MembersList";
 import useAuthStore from "../../store/authStore";
 import RemoveMemberDialog from "../members/RemoveMemberDialog";
 import ChangeRoleDialog from "../members/ChangeRoleDialog";
+import InviteDialog from "../members/InviteDialog";
 import { useState } from "react";
 
 const MembersModal = ({ isOpen, onClose, spaceId }) => {
@@ -26,6 +27,7 @@ const MembersModal = ({ isOpen, onClose, spaceId }) => {
 
   const [removeMember, setRemoveMember] = useState(null);
   const [changeRoleMember, setChangeRoleMember] = useState(null);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   const handleRemove = (member) => {
       setRemoveMember(member);
@@ -73,6 +75,17 @@ const MembersModal = ({ isOpen, onClose, spaceId }) => {
                 <X className="w-5 h-5" />
               </button>
             </div>
+             {/* Invite Button */}
+             {isOwner && (
+                <div className="px-6 py-2 bg-slate-50 border-b border-slate-100 flex justify-end">
+                    <button
+                        onClick={() => setInviteOpen(true)}
+                        className="text-xs px-3 py-1.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium cursor-pointer"
+                    >
+                        + Invite Member
+                    </button>
+                </div>
+            )}
 
             {/* Body */}
             <div className="max-h-[60vh] overflow-y-auto px-2 py-2">
@@ -114,6 +127,14 @@ const MembersModal = ({ isOpen, onClose, spaceId }) => {
                     member={changeRoleMember}
                     onClose={() => setChangeRoleMember(null)}
                     onSuccess={() => {/* Same here */}}
+                />
+            )}
+
+            {inviteOpen && (
+                <InviteDialog
+                  spaceId={spaceId}
+                  onClose={() => setInviteOpen(false)}
+                  onSuccess={() => {/* data updates via cache */}}
                 />
             )}
 

@@ -35,9 +35,8 @@ const sendInvite = async (req, res) => {
       token,
       expiresAt,
     });
-    const acceptUrl = `${process.env.CLIENT_URL}/invite/accept?token=${token}`;
-
-    if (process.env.NODE_ENV !== "test"|| process.env.FORCE_EMAIL === "true") {
+    const acceptUrl = `${process.env.CLIENT_URL}/accept-invite/${token}`;
+    if (process.env.NODE_ENV !== "test" || process.env.FORCE_EMAIL === "true") {
       try {
         await sendEmail({
           to: normalizedEmail,
@@ -75,7 +74,7 @@ const sendInvite = async (req, res) => {
       console.error("invite_sent log failed:", e.message);
     }
 
-    res.status(201).json({message : "Invite sent successfully"});
+    res.status(201).json({ message: "Invite sent successfully" });
   } catch (err) {
     console.error("sendInvite error:", err);
     res.status(500).json({ message: err.message });
@@ -104,19 +103,24 @@ const acceptInvite = async (req, res) => {
     }
 
     if (invite.email !== req.user.email.trim().toLowerCase()) {
-      return res.status(403).json({ message: "Not authorized" });
+      return res.status(403).json({
+        message: `This invite is for ${invite.email}, but you are logged in as ${req.user.email}. Please logout and login with the correct account.`
+      });
     }
 
     const existingMember = await MemberShip.findOne({
       userId: req.user._id,
       spaceId: invite.spaceId,
     });
-  if (existingMember) {
-  invite.status = "accepted";
-  invite.token = undefined;
-  await invite.save();
-  return res.json({ message: "Already a member" });
-}
+    if (existingMember) {
+      invite.status = "accepted";
+      invite.token = undefined;
+      await invite.save();
+      return res.json({
+        message: "Already a member",
+        spaceId: invite.spaceId
+      });
+    }
 
 
     await MemberShip.create({
@@ -129,7 +133,10 @@ const acceptInvite = async (req, res) => {
     invite.token = undefined;
     await invite.save();
 
-    res.json({ message: "Invite accepted" });
+    res.json({
+      message: "Invite accepted",
+      spaceId: invite.spaceId,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -201,7 +208,7 @@ const resendInvite = async (req, res) => {
     invite.expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000);
     await invite.save();
 
-    const acceptUrl = `${process.env.CLIENT_URL}/invite/accept?token=${invite.token}`;
+    const acceptUrl = `${process.env.CLIENT_URL}/accept-invite/${invite.token}`;
 
     if (process.env.NODE_ENV !== "test" || process.env.FORCE_EMAIL === "true") {
       await sendEmail({

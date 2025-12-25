@@ -6,8 +6,12 @@ import AuthLayout from "../../components/layouts/AuthLayout";
 import { API_PATHS } from "../../services/apiPaths";
 import api from "../../services/axios";
 import useAuthStore from "../../store/authStore";
+import { useLocation } from "react-router-dom";
+
 
 const LoginPage = () => {
+  const location = useLocation();
+
   const navigate = useNavigate();
   const { setUser } = useAuthStore();
   const [formData, setFormData] = useState({
@@ -30,18 +34,23 @@ const LoginPage = () => {
     e.preventDefault();
     setError("");
     setLoading(true);
-    console.log("Login Data:", formData);
     try {
       const response = await api.post(API_PATHS.AUTH.LOGIN, {
         email: formData.email,
         password: formData.password,
       });
-      console.log(response.data);
       
       // Update store
       setUser(response.data.user);
-useAuthStore.getState().setLoading(false);
-navigate("/app/spaces");
+     useAuthStore.getState().setLoading(false);
+    const inviteId = new URLSearchParams(location.search).get("invite");
+
+if (inviteId) {
+  navigate(`/accept-invite/${inviteId}`);
+} else {
+  navigate("/app/spaces");
+}
+
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {

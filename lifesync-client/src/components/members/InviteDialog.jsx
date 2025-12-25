@@ -15,7 +15,7 @@ const InviteDialog = ({ spaceId, onClose, onSuccess }) => {
 
     try {
       setLoading(true);
-      await api.post(API_PATHS.SPACE.INVITE(spaceId), {
+      await api.post(API_PATHS.INVITE.SEND(spaceId), {
         email,
         role,
       });

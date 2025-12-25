@@ -15,12 +15,13 @@ import SpaceLayout from "../components/layouts/SpaceLayout";
 // space pages
 import SpacesDashboard from "../pages/spaces/SpaceDashboard";
 import SpaceHome from "../pages/spaces/SpaceHome";
+import AcceptInvitePage from "../components/spaces/AcceptInvitePage";
 
 // future pages
 import TasksPage from "../pages/tasks/TaskPage";
 import ActivityPage from "../pages/activity/ActivityPage";
 import AppShell from "./AppShell";
-import Members from "../pages/spaces/Member";
+
 
 const router = createBrowserRouter([
   // ---------- AUTH ----------
@@ -28,6 +29,9 @@ const router = createBrowserRouter([
   { path: "/signup", element: <SignupPage /> },
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password/:token", element: <ResetPassword /> },
+
+  { path: "/accept-invite/:token", element: <AppShell><AcceptInvitePage /></AppShell> },
+
 
   // ---------- APP (PROTECTED) ----------
   {
@@ -55,7 +59,7 @@ const router = createBrowserRouter([
           { index: true, element: <SpaceHome /> },
           { path: "tasks", element: <TasksPage /> },
           { path: "activity", element: <ActivityPage /> },
-          { path: "members", element: <Members /> },
+
         ],
       },
     ],
