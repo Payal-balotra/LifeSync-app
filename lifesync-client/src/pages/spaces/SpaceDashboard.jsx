@@ -1,26 +1,20 @@
-// src/pages/spaces/SpacesDashboard.jsx
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getMySpaces } from "../../services/space.service";
 import SpaceCard from "../../components/spaces/SpaceCard";
 import CreateSpaceModal from "../../components/spaces/CreateSpaceModel";
+import InvitationsModal from "../../components/spaces/InvitationsModal";
 import { useState } from "react";
 import { Plus, Layers, Mail } from "lucide-react";
-
+import toast from "react-hot-toast";
 import { Skeleton } from "../../components/ui/Skeleton";
 
 const SpacesDashboard = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
+  const [showInvites, setShowInvites] = useState(false);
 
-  const {
-    data: spaces = [],
-    isLoading,
-    refetch,
-  } = useQuery({
-    queryKey: ["spaces"],
-    queryFn: getMySpaces,
-  });
+  const {data: spaces = [], isLoading,refetch,} = useQuery({queryKey: ["spaces"],queryFn: getMySpaces,});
 
   if (isLoading) {
     return (
@@ -55,7 +49,7 @@ const SpacesDashboard = () => {
         </div>
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate("/app/spaces/my-invites")}
+            onClick={() => setShowInvites(true)}
             className="cursor-pointer flex items-center gap-2 px-5 py-2.5 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold shadow-sm transition-all hover:scale-105 active:scale-95"
           >
             <Mail className="w-5 h-5" />
@@ -108,6 +102,16 @@ const SpacesDashboard = () => {
           }}
         />
       )}
+
+      <InvitationsModal 
+        isOpen={showInvites}
+        onClose={() => setShowInvites(false)}
+        onInviteAccepted={() => {
+           setShowInvites(false);
+           refetch();
+            toast.success("Invite accepted! Open the space from dashboard.");
+        }}
+      />
     </div>
   );
 };

@@ -9,7 +9,7 @@ const protect = require("../middlewares/authMiddleware");
 router.post("/login", handleLogin);
 router.post("/signup", handleSignUp);
 router.post("/logout", logout);
-router.post("/refersh", refreshToken);
+router.post("/refresh", refreshToken);
 
 router.post("/forgot-password", forgotPassword);
 router.post("/reset-password/:token", resetPassword);

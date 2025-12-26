@@ -1,27 +1,36 @@
 const Space = require("../models/Space");
 const Membership = require("../models/MemberShip");
 const mongoose = require("mongoose");
-
+const activityLogger  = require("../utils/activityLogger")
 
 const createSpace = async (req, res) => {
   const { name } = req.body;
+  const existingSpace = await Space.findOne({
+    name: name.trim(),
+    createdBy: req.user._id,
+  });
+
+  if (existingSpace) {
+    return res.status(400).json({
+      message: "You already have a space with this name",
+    });
+  }
+
   const space = await Space.create({
     name,
     createdBy: req.user._id,
   });
 
-   const membership = await Membership.create({
+  const membership = await Membership.create({
     userId: req.user._id,
     spaceId: space._id,
     role: "owner",
   });
 
-
   res.status(200).json(space);
 };
 
 const getMySpaces = async (req, res) => {
-   
   const memberships = await Membership.find({
     userId: req.user._id,
   }).populate("spaceId", " name createdAt");
@@ -29,12 +38,11 @@ const getMySpaces = async (req, res) => {
   res.json(memberships);
 };
 
-
 const getSpaceMembers = async (req, res) => {
-const spaceId = req.params.spaceId?.trim();
+  const spaceId = req.params.spaceId?.trim();
   if (!mongoose.Types.ObjectId.isValid(spaceId)) {
-   return res.status(400).json({ message: "Invalid space ID" });
- }
+    return res.status(400).json({ message: "Invalid space ID" });
+  }
   // check membership
   const isMember = await Membership.findOne({
     spaceId,
@@ -53,72 +61,84 @@ const spaceId = req.params.spaceId?.trim();
 };
 
 const updateMemberRole = async (req, res) => {
-  const { spaceId, memberId } = req.params;
-  const { role } = req.body;
+  try {
+    const { spaceId, memberId } = req.params;
+    const { role } = req.body;
 
-  if (!["owner", "editor", "viewer"].includes(role)) {
-    return res.status(400).json({ message: "Invalid role" });
-  }
+    if (!["owner", "editor", "viewer"].includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
 
-  const owner = await Membership.findOne({
-    spaceId,
-    userId: req.user._id,
-    role: "owner",
-  });
+    const owner = await Membership.findOne({
+      spaceId,
+      userId: req.user._id,
+      role: "owner",
+    });
 
-  if (!owner) {
-    return res.status(403).json({ message: "Only owner can change roles" });
-  }
+    if (!owner) {
+      return res.status(403).json({ message: "Only owner can change roles" });
+    }
 
-  const member = await Membership.findOne({ _id: memberId, spaceId });
-  if (!member) {
-    return res.status(404).json({ message: "Member not found in this space" });
-  }
+    const member = await Membership
+      .findOne({ _id: memberId, spaceId })
+      .populate("userId", "name email");
 
-  // prevent self role change
-  if (member.userId.toString() === req.user._id.toString()) {
-    return res.status(400).json({ message: "You cannot change your own role" });
-  }
+    if (!member) {
+      return res.status(404).json({ message: "Member not found in this space" });
+    }
 
-  // ownership transfer
-  if (role === "owner") {
-    owner.role = "editor";
-    member.role = "owner";
+    if (member.userId._id.toString() === req.user._id.toString()) {
+      return res.status(400).json({ message: "You cannot change your own role" });
+    }
 
-    await owner.save();
+    const previousRole = member.role;
+
+    // Ownership transfer
+    if (role === "owner") {
+      owner.role = "editor";
+      member.role = "owner";
+
+      await owner.save();
+      await member.save();
+
+      await activityLogger({
+        space: spaceId,
+        user: req.user._id,
+        action: "ownership_transferred",
+        entityType: "membership",
+        entityId: member._id,
+        meta: {
+          from: owner.userId,
+          to: member.userId._id,
+        },
+      });
+
+      return res.json({ message: "Ownership transferred successfully" });
+    }
+
+    member.role = role;
     await member.save();
-     await activityLogger({
+
+    await activityLogger({
       space: spaceId,
       user: req.user._id,
-      action: "ownership_transferred",
+      action: "member_role_changed",
       entityType: "membership",
       entityId: member._id,
       meta: {
-        from: owner.userId,
-        to: member.userId._id,
+        memberName: member.userId.name,
+        from: previousRole,
+        to: role,
       },
     });
 
-    return res.json({ message: "Ownership transferred successfully" });
+    res.json({ message: "Role updated successfully" });
+  } catch (error) {
+    console.error("updateMemberRole error:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
-
-  member.role = role;
-  await member.save();
-   await activityLogger({
-    space: spaceId,
-    user: req.user._id,
-    action: "member_role_changed",
-    entityType: "membership",
-    entityId: member._id,
-    meta: {
-      memberName: member.userId.name,
-      from: previousRole,
-      to: role,
-    },
-  });
-
-  res.json({ message: "Role updated successfully" });
 };
+
 
 const removeMember = async (req, res) => {
   const { spaceId, memberId } = req.params;
@@ -148,7 +168,7 @@ const removeMember = async (req, res) => {
   }
 
   await member.deleteOne();
-    await activityLogger({
+  await activityLogger({
     space: spaceId,
     user: req.user._id,
     action: "member_removed",
@@ -161,7 +181,6 @@ const removeMember = async (req, res) => {
 
   res.json({ message: "Member removed successfully" });
 };
-
 
 const getSpaceById = async (req, res) => {
   const { spaceId } = req.params;
@@ -191,13 +210,11 @@ const getSpaceById = async (req, res) => {
   res.status(200).json(space);
 };
 
-
-
 module.exports = {
   createSpace,
   getMySpaces,
   getSpaceMembers,
   updateMemberRole,
   removeMember,
-  getSpaceById
+  getSpaceById,
 };

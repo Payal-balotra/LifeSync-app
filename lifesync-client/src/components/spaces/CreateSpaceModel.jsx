@@ -5,6 +5,7 @@ import { createSpace } from "../../services/space.service";
 
 const CreateSpaceModal = ({ onClose, onCreated }) => {
   const [name, setName] = useState("");
+  const [error, setError] = useState("");
   const queryClient = useQueryClient();
 
   const { mutate, isLoading, isError } = useMutation({
@@ -13,18 +14,23 @@ const CreateSpaceModal = ({ onClose, onCreated }) => {
       queryClient.invalidateQueries({ queryKey: ["spaces"] });
       onCreated(space._id);
     },
+    onError: (err) => {
+      setError(
+        err.response?.data?.message ||
+          "Something went worng while creating space"
+      );
+    },
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
-    mutate({ name });
+    mutate({ name }); // here useMutation works 
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-200">
-        
         {/* Header */}
         <div className="px-6 py-4 border-b border-slate-100">
           <h2 className="text-lg font-semibold text-slate-800">
@@ -50,18 +56,14 @@ const CreateSpaceModal = ({ onClose, onCreated }) => {
             />
           </div>
 
-          {isError && (
-            <p className="text-sm text-red-600">
-              Something went wrong. Please try again.
-            </p>
-          )}
+          {error && <p className="text-sm text-red-600">{error}</p>}
 
           {/* Actions */}
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100"
+              className="px-4 py-2 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 cursor-pointer"
             >
               Cancel
             </button>
@@ -69,7 +71,7 @@ const CreateSpaceModal = ({ onClose, onCreated }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60"
+              className="px-5 py-2 rounded-xl text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 cursor-pointer"
             >
               {isLoading ? "Creating..." : "Create space"}
             </button>

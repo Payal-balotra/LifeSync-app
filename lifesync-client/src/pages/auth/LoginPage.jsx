@@ -39,9 +39,6 @@ const LoginPage = () => {
         password: formData.password,
       });
 
-      // Update store
-      setUser(response.data.user);
-      useAuthStore.getState().setLoading(false);
       const inviteId = new URLSearchParams(location.search).get("invite");
 
       if (inviteId) {

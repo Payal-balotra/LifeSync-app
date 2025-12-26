@@ -164,7 +164,7 @@ const SignupPage = () => {
             `}
           >
             <Lock
-              className={`w-5 h-5 transition-colors ${
+              className={`w-5 h-5 transition-colors  ${
                 focusedField === "password"
                   ? "text-purple-500"
                   : "text-slate-400"

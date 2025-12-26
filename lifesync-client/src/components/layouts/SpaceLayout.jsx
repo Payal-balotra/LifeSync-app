@@ -28,7 +28,7 @@ const SpaceLayout = () => {
     queryKey: ["space", spaceId],
     queryFn: () =>
       api.get(API_PATHS.SPACE.GET_ONE(spaceId)).then((res) => res.data),
-    enabled: !!spaceId,
+    enabled: !!spaceId && spaceId !== "my-invites",
   });
 
   /* ------------------------------
@@ -40,7 +40,7 @@ const SpaceLayout = () => {
       api
         .get(API_PATHS.SPACE.GET_SPACE_MEMBERS(spaceId))
         .then((res) => res.data),
-    enabled: !!spaceId,
+    enabled: !!spaceId && spaceId !== "my-invites",
   });
 
   /* ------------------------------
@@ -90,33 +90,28 @@ const SpaceLayout = () => {
     gradients[(space?.name?.length || 0) % gradients.length];
 
   return (
-    <div className="flex flex-col h-full w-full bg-white overflow-hidden">
-      {/* ===== Header ===== */}
-      <div className="px-4 py-3 border-b border-slate-200 flex justify-between">
-        <div className="flex items-center gap-3">
-          <div
-            className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradientClass} flex items-center justify-center text-white font-bold`}
-          >
-            {space?.name?.charAt(0)?.toUpperCase()}
-          </div>
-          <div>
-            <h1 className="font-semibold">{space?.name}</h1>
-            <p className="text-xs text-slate-500">
-              {myRole} • {memberCount} member{memberCount !== 1 && "s"}
-            </p>
+    <div className="flex h-full w-full bg-white overflow-hidden">
+      {/* Sidebar */}
+      <aside className="w-64 border-r bg-slate-50 flex flex-col">
+        {/* Space Header */}
+        <div className="p-4 border-b border-slate-200">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradientClass} flex items-center justify-center text-white font-bold shrink-0`}
+            >
+              {space?.name?.charAt(0)?.toUpperCase()}
+            </div>
+            <div className="min-w-0 overflow-hidden">
+              <h1 className="font-semibold truncate">{space?.name}</h1>
+              <p className="text-xs text-slate-500 truncate">
+                {myRole} • {memberCount} member{memberCount !== 1 && "s"}
+              </p>
+            </div>
           </div>
         </div>
 
-        <button className="flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg text-sm">
-          <Settings className="w-4 h-4" />
-          Settings
-        </button>
-      </div>
-
-      {/* ===== Body ===== */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-64 border-r bg-slate-50 p-4 space-y-2">
+        {/* Navigation */}
+        <div className="flex-1 p-4 space-y-2 overflow-y-auto">
           <NavLink
             to={`/app/spaces/${spaceId}`}
             end
@@ -167,13 +162,14 @@ const SpaceLayout = () => {
             <Users className="w-4 h-4" />
             Members
           </button>
-        </aside>
+        </div>
+      </aside>
 
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto bg-slate-50/50">
-          <Outlet />
-        </main>
-      </div>
+      {/* Main content */}
+      <main className="flex-1 overflow-y-auto bg-slate-50/50">
+        <Outlet />
+      </main>
+
       
       {/* Members Modal */}
       <MembersModal 

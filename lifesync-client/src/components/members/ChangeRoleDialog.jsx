@@ -10,7 +10,7 @@ const ChangeRoleDialog = ({ spaceId, member, onClose, onSuccess }) => {
     try {
       setLoading(true);
       await api.patch(
-        API_PATHS.SPACE.CHANGE_ROLE(spaceId, member._id),
+        API_PATHS.SPACE.UPDATE_MEMBER_ROLE(spaceId, member._id),
         { role }
       );
       onSuccess?.();
@@ -42,13 +42,13 @@ const ChangeRoleDialog = ({ spaceId, member, onClose, onSuccess }) => {
         </select>
 
         <div className="flex justify-end gap-2">
-          <button onClick={onClose} className="px-4 py-2 text-sm">
+          <button onClick={onClose} className="px-4 py-2 text-sm cursor-pointer">
             Cancel
           </button>
           <button
             onClick={handleChangeRole}
             disabled={loading}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm"
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm cursor-pointer"
           >
             {loading ? "Updating..." : "Update Role"}
           </button>

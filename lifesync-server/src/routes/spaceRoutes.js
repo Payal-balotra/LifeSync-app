@@ -12,7 +12,7 @@ router.post("/",auth,createSpace);
 router.get("/",auth,getMySpaces);
 router.get("/:spaceId", auth, getSpaceById);
 router.get("/:spaceId/members",auth,getSpaceMembers);
-router.patch("/:spaceId/memebers/:memberId",auth,updateMemberRole);
+router.patch("/:spaceId/members/:memberId",auth,updateMemberRole);
 router.delete("/:spaceId/members/:memberId",auth,removeMember)
 
 
