@@ -29,7 +29,7 @@ const router = createBrowserRouter([
   { path: "/forgot-password", element: <ForgotPassword /> },
   { path: "/reset-password/:token", element: <ResetPassword /> },
 
-  { path: "/accept-invite/:token", element: <AppShell><AcceptInvitePage /></AppShell> },
+  { path: "/accept-invite/:token", element: <ProtectedRoute><AcceptInvitePage /></ProtectedRoute> },
 
 
   // ---------- APP (PROTECTED) ----------
@@ -55,7 +55,7 @@ const router = createBrowserRouter([
         path: "spaces/:spaceId",
         element: <SpaceLayout />,
         children: [
-          { index: true, element: <SpaceHome /> },
+          { index: true, element: <SpaceHome  /> },
           { path: "tasks", element: <TasksPage /> },
           { path: "activity", element: <ActivityPage /> },
 
