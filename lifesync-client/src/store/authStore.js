@@ -15,15 +15,16 @@ const useAuthStore = create((set) => ({
   },
 
   checkAuth: async () => {
+    set({ loading: true });
     try {
       const res = await api.get(API_PATHS.AUTH.ME);
 
       set({ user: res.data, loading: false });
 
     } catch (err) {
-      if (err.response?.status === 401) {
+     
         set({ user: null, loading: false });
-      }
+      
     }
   },
 

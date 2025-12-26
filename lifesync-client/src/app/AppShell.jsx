@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import useAuthStore from "../store/authStore";
 
 const AppShell = ({ children }) => {
-  const checkAuth = useAuthStore((s) => s.checkAuth);
+  const { checkAuth, loading } = useAuthStore();
   const location = useLocation();
 
   useEffect(() => {
@@ -13,10 +13,18 @@ const AppShell = ({ children }) => {
       location.pathname === "/forgot-password" ||
       location.pathname.startsWith("/reset-password");
 
-    if (isAuthPage) return;
+    if (!isAuthPage) {
+      checkAuth();
+    }
+  }, [location.pathname, checkAuth]);
 
-    checkAuth();
-  }, [checkAuth, location.pathname]);
+  if (loading) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        Checking session...
+      </div>
+    );
+  }
 
   return children;
 };

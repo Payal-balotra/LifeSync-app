@@ -13,11 +13,12 @@ import {
 import AuthLayout from "../../components/layouts/AuthLayout";
 import api from "../../services/axios";
 import { API_PATHS } from "../../services/apiPaths";
+import useAuthStore from "../../store/authStore";
  
 
 
 const SignupPage = () => {
-
+  const { setUser } = useAuthStore.getState();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -60,6 +61,7 @@ const SignupPage = () => {
         email: formData.email,
         password: formData.password,
       });
+      setUser(res.data.user);
     const inviteId = new URLSearchParams(location.search).get("invite");
 
     if (inviteId) {

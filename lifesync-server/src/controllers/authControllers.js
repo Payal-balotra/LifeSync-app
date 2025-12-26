@@ -47,7 +47,11 @@ const handleSignUp = async (req, res) => {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(201).json({message: "Signup successful"});
+    res.status(201).json({message: "Signup successful",user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    },});
   } catch (error) {
     res.status(500).json({ message: "Signup failed" });
   }
@@ -91,8 +95,11 @@ const handleLogin = async (req, res) => {
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    console.log("yes it came to backend and token generated ")
-    res.status(200).json({message: "Login successful"});
+    res.status(200).json({message: "Login successful",user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    },});
   } catch (error) {
     res.status(500).json({ message: "Login failed" });
   }

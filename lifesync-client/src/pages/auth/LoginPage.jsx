@@ -38,7 +38,7 @@ const LoginPage = () => {
         email: formData.email,
         password: formData.password,
       });
-
+       setUser(response.data.user);
       const inviteId = new URLSearchParams(location.search).get("invite");
 
       if (inviteId) {

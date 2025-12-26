@@ -20,7 +20,6 @@ import AcceptInvitePage from "../components/spaces/AcceptInvitePage";
 // future pages
 import TasksPage from "../pages/tasks/TaskPage";
 import ActivityPage from "../pages/activity/ActivityPage";
-import AppShell from "./AppShell";
 
 
 const router = createBrowserRouter([
@@ -37,11 +36,11 @@ const router = createBrowserRouter([
   {
     path: "/app",
     element: (
-      <AppShell>
+    
         <ProtectedRoute>
           <AppLayout />
         </ProtectedRoute>
-      </AppShell>
+     
     ),
     children: [
       {
