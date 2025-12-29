@@ -1,1 +1,34 @@
 @import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* Remote cursor caret */
+.remote-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.2em;
+  margin-left: -1px;
+  vertical-align: text-bottom;
+  position: relative;
+  background: var(--cursor-bg, #3B82F6);
+   pointer-events: none;
+}
+
+/* Cursor name tooltip */
+.remote-cursor::after {
+  content: attr(data-name);
+  position: absolute;
+  top: -1.4em;
+  left: 0;
+  background: var(--cursor-bg);
+  color: #fff;
+  font-size: 10px;
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  z-index: 10;
+}

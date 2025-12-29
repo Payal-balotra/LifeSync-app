@@ -18,8 +18,8 @@ const SpacesDashboard = () => {
 
   if (isLoading) {
     return (
-      <div className="max-w-7xl mx-auto p-6 space-y-8">
-        <div className="flex items-center justify-between">
+      <div className="h-full w-full overflow-y-auto">
+        <div className="max-w-7xl mx-auto p-6 space-y-8 min-h-full">
             <div>
                 <Skeleton className="h-8 w-48 mb-2" />
                 <Skeleton className="h-4 w-64" />

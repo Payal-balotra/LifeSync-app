@@ -22,7 +22,7 @@ const SpaceLayout = () => {
   const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
 
   /* ------------------------------
-     1️⃣ Fetch space details
+     1 Fetch space details
      ------------------------------ */
   const { data: space, isLoading } = useQuery({
     queryKey: ["space", spaceId],
@@ -32,7 +32,7 @@ const SpaceLayout = () => {
   });
 
   /* ------------------------------
-     2️⃣ Fetch members (for role + count)
+     2 Fetch members (for role + count)
      ------------------------------ */
   const { data: members = [] } = useQuery({
     queryKey: ["space-members", spaceId],
@@ -44,7 +44,7 @@ const SpaceLayout = () => {
   });
 
   /* ------------------------------
-     3️⃣ Derived data
+     3 Derived data
      ------------------------------ */
   const memberCount = members.length;
   const myMembership = members.find(
@@ -53,7 +53,7 @@ const SpaceLayout = () => {
   const myRole = myMembership?.role || "member";
 
   /* ------------------------------
-     4️⃣ Loading skeleton
+     4 Loading skeleton
      ------------------------------ */
   if (isLoading) {
     return (
@@ -77,7 +77,7 @@ const SpaceLayout = () => {
   }
 
   /* ------------------------------
-     5️⃣ Gradient avatar
+     5 Gradient avatar
      ------------------------------ */
   const gradients = [
     "from-purple-500 to-indigo-600",
@@ -166,7 +166,7 @@ const SpaceLayout = () => {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto bg-slate-50/50">
+      <main className="flex-1 flex flex-col overflow-hidden bg-slate-50/50">
         <Outlet />
       </main>
 

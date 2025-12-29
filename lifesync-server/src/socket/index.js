@@ -1,28 +1,101 @@
-const { Server } = require("socket.io");
+// const { Server } = require("socket.io");
 
-function setupSocket(server) {
-  console.log("🔥 setupSocket called");
+// const spaceUsers = {}; // { spaceId: Map<userId, { socketId, name }> }
 
-  const io = new Server(server, {
-    cors: {
-      origin: "http://localhost:5176",
-      credentials: true,
-    },
-  });
+//  const  setupSocket=(server)=>
+//    {
+//   console.log("🔥 setupSocket called");
 
- io.on("connection", (socket) => {
-  console.log("🟢 Socket connected:", socket.id);
+//   const io = new Server(server, {
+//     cors: {
+//       origin: "http://localhost:5176",
+//       credentials: true,
+//     },
+//   });
 
-  socket.on("join-space", ({ spaceId, user }) => {
-    console.log("👥 join-space:", spaceId, user?.name);
-    socket.join(spaceId);
-  });
+//   io.on("connection", (socket) => {
+//     console.log("🟢 Socket connected:", socket.id);
 
-  socket.on("content-change", ({ spaceId, content }) => {
-    console.log("✍️ content-change:", spaceId, content);
-    socket.to(spaceId).emit("content-update", content);
-  });
-});
-}
+//     // ---------------- JOIN SPACE ----------------
+//     socket.on("join-space", ({ spaceId, user }) => {
+//        if (socket.rooms.has(spaceId)) return;
+//       console.log("👥 join-space:", spaceId, user.name);
+//       socket.join(spaceId);
 
-module.exports = setupSocket;
+//       if (!spaceUsers[spaceId]) {
+//         spaceUsers[spaceId] = new Map();
+//       }
+
+//       // dedupe by userId
+//       spaceUsers[spaceId].set(socket.id, {
+//         socketId: socket.id,
+//         userId: user.id,
+//         name: user.name,
+//       });
+
+//       io.to(spaceId).emit(
+//         "presence-update",
+//         Array.from(spaceUsers[spaceId].values())
+//       );
+//     });
+
+//     // ---------------- CONTENT ----------------
+//    socket.on("content-change", ({ spaceId, content, senderId }) => {
+//   socket.to(spaceId).emit("content-update", {
+//     content,
+//     senderId,
+//   });
+// })
+
+//     // ---------------- TYPING ----------------
+//     socket.on("typing:start", ({ spaceId, user }) => {
+//       socket.to(spaceId).emit("typing:update", {
+//         userId: user.id,
+//         name: user.name,
+//         isTyping: true,
+//       });
+//     });
+
+//     socket.on("typing:stop", ({ spaceId, user }) => {
+//       socket.to(spaceId).emit("typing:update", {
+//         userId: user.id,
+//         name: user.name,
+//         isTyping: false,
+//       });
+//     });
+
+//   // ---------------- CURSOR ----------------
+//   socket.on("cursor:update", ({ spaceId, cursor, user }) => {
+//     console.log("🖥️ server received cursor:update", {
+//       spaceId,
+//       cursor,
+//       user,
+//     });
+//     socket.to(spaceId).emit("cursor:update", {
+//       userId: user.id,
+//       name: user.name,
+//       cursor,
+//     });
+//   });
+
+//   // ---------------- DISCONNECT ----------------
+//     socket.on("disconnect", () => {
+//   Object.keys(spaceUsers).forEach((spaceId) => {
+//     const usersMap = spaceUsers[spaceId];
+
+//     if (usersMap.has(socket.id)) {
+//       usersMap.delete(socket.id);
+
+//       io.to(spaceId).emit(
+//         "presence-update",
+//         Array.from(usersMap.values())
+//       );
+//     }
+//   });
+
+//   console.log("🔴 Socket disconnected:", socket.id);
+// });
+//   });
+// }
+
+// module.exports = setupSocket
