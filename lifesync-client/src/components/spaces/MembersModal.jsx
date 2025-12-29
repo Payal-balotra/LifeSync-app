@@ -11,6 +11,7 @@ import RemoveMemberDialog from "../members/RemoveMemberDialog";
 import ChangeRoleDialog from "../members/ChangeRoleDialog";
 import InviteDialog from "../members/InviteDialog";
 import { useState } from "react";
+import useMySpaceRole from "../../app/hooks/useMySpaceRole";
 
 const MembersModal = ({ isOpen, onClose, spaceId }) => {
   const { data: members = [], isLoading } = useQuery({
@@ -21,14 +22,15 @@ const MembersModal = ({ isOpen, onClose, spaceId }) => {
     },
     enabled: !!spaceId && isOpen,
   });
-
+  const { isOwner, isLoading: roleLoading } =  useMySpaceRole(spaceId);
   const { user } = useAuthStore();
-  const isOwner = members.some(m => m.userId._id === user?._id && m.role === "owner");
-
+  
+  
   const [removeMember, setRemoveMember] = useState(null);
   const [changeRoleMember, setChangeRoleMember] = useState(null);
   const [inviteOpen, setInviteOpen] = useState(false);
-
+  
+  if (!isOpen || roleLoading) return null;
   const handleRemove = (member) => {
       setRemoveMember(member);
   };

@@ -1,23 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import * as Y from "yjs";
 import { WebsocketProvider } from "y-websocket";
-import { randomColor, getCaretCoordinates ,drawSelection } from "../../lib/utils";
+import {
+  randomColor,
+  getCaretCoordinates,
+  drawSelection,
+} from "../../lib/utils";
 import useAuthStore from "../../store/authStore";
 
 
-export default function SpaceEditor({ spaceId }) {
+export default function SpaceEditor({ spaceId ,role ,canEdit}) {
   const { user } = useAuthStore();
-
   const textareaRef = useRef(null);
   const cursorLayerRef = useRef(null);
   const lastValueRef = useRef("");
   const colorRef = useRef(randomColor());
-
+  const clearEditorRef = useRef(null);
   const [typingUsers, setTypingUsers] = useState([]);
 
   useEffect(() => {
     if (!spaceId || !textareaRef.current || !user) return;
-
+    if(!canEdit)return;
     let typingTimeout = null;
 
     const ydoc = new Y.Doc();
@@ -91,9 +94,9 @@ export default function SpaceEditor({ spaceId }) {
         position: textarea.selectionStart,
       });
       awareness.setLocalStateField("selection", {
-    start: textarea.selectionStart,
-    end: textarea.selectionEnd,
-  });
+        start: textarea.selectionStart,
+        end: textarea.selectionEnd,
+      });
     };
 
     textarea.addEventListener("keyup", sendCursor);
@@ -113,27 +116,23 @@ export default function SpaceEditor({ spaceId }) {
         if (!state.user) return;
 
         // collect typing users (except me)
-        if (
-          clientId !== localClientId &&
-          state.typing &&
-          state.user.name
-        ) {
+        if (clientId !== localClientId && state.typing && state.user.name) {
           activeTypingUsers.push(state.user.name);
         }
 
         // render cursor (except me)
         if (!state.cursor || clientId === localClientId) return;
 
-         if (state.selection) {
-    drawSelection(
-      layer,
-      textarea,
-      state.selection.start,
-      state.selection.end,
-      state.user.color
-    );
-  }
-   if (!state.cursor) return;
+        if (state.selection) {
+          drawSelection(
+            layer,
+            textarea,
+            state.selection.start,
+            state.selection.end,
+            state.user.color
+          );
+        }
+        if (!state.cursor) return;
 
         const { position } = state.cursor;
         const { x, y } = getCaretCoordinates(textarea, position);
@@ -166,6 +165,10 @@ export default function SpaceEditor({ spaceId }) {
     };
 
     awareness.on("change", onAwarenessChange);
+      // Clear Editor Logic
+    clearEditorRef.current = () => {
+      yText.delete(0, yText.length);
+    };
 
     return () => {
       textarea.removeEventListener("input", onInput);
@@ -179,26 +182,51 @@ export default function SpaceEditor({ spaceId }) {
   }, [spaceId, user]);
 
   return (
-    <div className="relative w-full h-full">
-      {/* 🔵 TYPING INDICATOR */}
-      {typingUsers.length > 0 && (
-        <div className="absolute top-0 left-0 w-full text-sm text-gray-500 px-2 py-1 bg-white z-10">
-          {typingUsers.join(", ")}{" "}
-          {typingUsers.length === 1 ? "is" : "are"} typing...
-        </div>
-      )}
-
-      <textarea
-        ref={textareaRef}
-        className="w-full h-full border p-4 pt-10 outline-none rounded resize-none font-mono leading-6"
-        placeholder="Start typing..."
-      />
-
-      {/* cursor overlay */}
-      <div
-        ref={cursorLayerRef}
-        className="absolute inset-0 pointer-events-none"
-      />
+   <div className="relative w-full h-full flex flex-col">
+  
+  {/* 🔵 TYPING INDICATOR */}
+  {typingUsers.length > 0 && (
+    <div className="absolute top-0 left-0 w-full text-sm text-gray-500 px-2 py-1 bg-white z-10">
+      {typingUsers.join(", ")} {typingUsers.length === 1 ? "is" : "are"} typing...
     </div>
+  )}
+
+  {/* EDITOR */}
+  <textarea
+    ref={textareaRef}
+    disabled={!canEdit}
+     className={`w-full h-full border p-4 rounded resize-none ${
+    !canEdit ? "bg-gray-50 cursor-not-allowed" : ""
+  }`}
+  placeholder={
+    canEdit
+      ? "Start typing..."
+      : "You have read-only access"
+  }
+  />
+
+  {/* cursor overlay */}
+  <div
+    ref={cursorLayerRef}
+    className="absolute inset-0 pointer-events-none"
+  />
+
+  {/* INFO + ACTION BAR */}
+  <div className="flex items-center justify-between gap-4 text-xs text-gray-500 bg-gray-50 border-t border-gray-200 px-3 py-2">
+    <p className="leading-relaxed">
+      ✨ This editor is optimized for live sessions, helping teams think and write together in the moment.
+    </p>
+{canEdit && (
+    <button
+      className="shrink-0 text-xs font-medium text-red-200 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md transition cursor-pointer bg-red-500"
+      onClick={()=>clearEditorRef.current?.()}
+    >
+      Clear editor
+    </button>
+)}
+  </div>
+
+</div>
+
   );
 }
