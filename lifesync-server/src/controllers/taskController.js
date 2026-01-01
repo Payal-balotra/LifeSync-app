@@ -1,6 +1,6 @@
 const Task = require("../models/Task");
 const ActivityLog = require("../models/ActivityLog");
-const activityLogger = require("../utils/activityLogger");
+const {activityLogger} = require("../utils/activityLogger");
 const mongoose = require("mongoose");
 
 /**
@@ -12,15 +12,22 @@ const createTask = async (req, res) => {
   if (!title) {
     return res.status(400).json({ message: "Title is required" });
   }
+  const assignees = Array.isArray(assignedTo)
+  ? assignedTo
+  : assignedTo
+  ? [assignedTo]
+  : [];
 
   const task = await Task.create({
     space: req.space.spaceId,
     title,
     description,
-    assignedTo,
+    assignedTo : assignees,
     dueDate,
     createdBy: req.user._id,
   });
+  await task.populate("assignedTo", "name email");
+   await task.populate("createdBy", "name");
 
   await activityLogger({
     space: req.space.spaceId,
@@ -53,9 +60,9 @@ const getTasks = async (req, res) => {
  */
 const updateTask = async (req, res) => {
   const { taskId } = req.params;
-  const userId = req.user._id;
+  const userId = req.user._id.toString();
 
-  // 1 Allow only specific fields
+  // 1️⃣ Allow only specific fields
   const allowedUpdates = [
     "title",
     "description",
@@ -70,71 +77,65 @@ const updateTask = async (req, res) => {
     }
   });
 
-  // 2 Fetch task
+  // 2️⃣ Fetch task
   const task = await Task.findOne({
     _id: taskId,
     space: req.space.spaceId,
+    isArchived: false,
   });
 
   if (!task) {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  // 3 Permission facts (compute ONCE)
+  // 3️⃣ Permission facts
   const role = req.space.role; // owner | editor | viewer
-  const isAssigned = (task.assignedTo || [])
-    .map((id) => id.toString())
-    .includes(userId.toString());
-
+  const isOwner = role === "owner";
+const isAssigned = task.assignedTo.some(
+  (id) => id.toString() === req.user._id.toString()
+);
   const updateKeys = Object.keys(req.body);
-  const isOnlyStatus =
-    updateKeys.length === 1 && updateKeys[0] === "status";
+  const isOnlyStatus = updateKeys.length === 1 && updateKeys[0] === "status";
 
   /**
-   * PERMISSION RULES
+   * 🔐 PERMISSION RULES
    */
 
-  // Owner / Editor → full access
-  if (role === "owner" || role === "editor") {
-    // no restriction
+  // OWNER → full access
+  if (isOwner) {
+    // allowed  full access
   }
-
-  // Viewer
-  else if (role === "viewer") {
-    // Viewer NOT assigned → block
-    if (!isAssigned) {
-      return res
-        .status(403)
-        .json({ message: "Viewers cannot update tasks" });
-    }
-
-    // Viewer assigned → status only
+  // ASSIGNED USER → status only
+  else if (isAssigned) {
     if (!isOnlyStatus) {
       return res.status(403).json({
-        message: "Assigned viewers can only update task status",
+        message: "Assigned user can only update task status",
       });
     }
   }
-
-  // Any other role (safety net)
+  // EVERYONE ELSE → blocked
   else {
-    return res
-      .status(403)
-      .json({ message: "Not allowed to update this task" });
+    return res.status(403).json({
+      message: "Only assigned user can update this task",
+    });
   }
 
-  // 4 Validate status value
+  /**
+   * 4️⃣ Validate status value
+   */
   if (
     req.body.status &&
-    !["todo", "in-progress", "done"].includes(req.body.status)
+    !["todo", "in_progress", "done"].includes(req.body.status)
   ) {
     return res.status(400).json({ message: "Invalid status value" });
   }
 
-  // 5 Status transition rules
+  /**
+   * 5️⃣ Status transition rules
+   */
   const allowedStatusTransitions = {
-    todo: ["in-progress"],
-    "in-progress": ["done"],
+    todo: ["in_progress"],
+    in_progress: ["done"],
     done: [],
   };
 
@@ -142,24 +143,23 @@ const updateTask = async (req, res) => {
     const currentStatus = task.status;
     const nextStatus = req.body.status;
 
-    if (!allowedStatusTransitions[currentStatus].includes(nextStatus)) {
+    if (!allowedStatusTransitions[currentStatus]?.includes(nextStatus)) {
       return res.status(400).json({
         message: `Invalid status transition from ${currentStatus} to ${nextStatus}`,
       });
     }
   }
 
-  // 6 Snapshot before update
+  // 6️⃣ Snapshot before update
   const oldTask = task.toObject();
 
-  // 7 Apply update
+  // 7️⃣ Apply update
   Object.assign(task, req.body);
   await task.save();
 
-  // 8 Build diff for activity log
+  // 8️⃣ Build diff for activity log
   const changes = {};
 
-  // status diff
   if (req.body.status && oldTask.status !== task.status) {
     changes.status = {
       from: oldTask.status,
@@ -167,7 +167,6 @@ const updateTask = async (req, res) => {
     };
   }
 
-  // title, description, dueDate diff
   ["title", "description", "dueDate"].forEach((field) => {
     if (
       req.body[field] !== undefined &&
@@ -180,24 +179,21 @@ const updateTask = async (req, res) => {
     }
   });
 
-  // assignedTo diff
-  if (req.body.assignedTo) {
-    const oldAssigned = (oldTask.assignedTo || []).map(String);
-    const newAssigned = (task.assignedTo || []).map(String);
-
-    const added = newAssigned.filter((id) => !oldAssigned.includes(id));
-    const removed = oldAssigned.filter((id) => !newAssigned.includes(id));
-
-    if (added.length || removed.length) {
-      changes.assignedTo = { added, removed };
-    }
+  if (
+    req.body.assignedTo &&
+    String(oldTask.assignedTo) !== String(task.assignedTo)
+  ) {
+    changes.assignedTo = {
+      from: oldTask.assignedTo,
+      to: task.assignedTo,
+    };
   }
 
-  // 9 Log activity only if something changed
+  // 9️⃣ Activity log
   if (Object.keys(changes).length > 0) {
     await activityLogger({
       space: req.space.spaceId,
-      user: userId,
+      user: req.user._id,
       action: "task_updated",
       entityType: "task",
       entityId: task._id,
@@ -205,9 +201,12 @@ const updateTask = async (req, res) => {
     });
   }
 
+  // 🔟 IMPORTANT: populate before returning
+  await task.populate("assignedTo", "name email");
+  await task.populate("createdBy", "name");
+
   res.json(task);
 };
-
 /**
  * DELETE (ARCHIVE) TASK
  */

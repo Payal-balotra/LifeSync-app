@@ -1,7 +1,7 @@
 const Space = require("../models/Space");
 const Membership = require("../models/MemberShip");
 const mongoose = require("mongoose");
-const activityLogger  = require("../utils/activityLogger")
+const {activityLogger}  = require("../utils/activityLogger")
 
 const createSpace = async (req, res) => {
   const { name } = req.body;

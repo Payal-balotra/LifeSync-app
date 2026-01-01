@@ -56,7 +56,7 @@ describe("PATCH /spaces/:spaceId/tasks/:taskId (updateTask)", () => {
     const res = await request(app)
       .patch(`/api/spaces/${space._id}/tasks/${task._id}`)
       .set("Cookie", `accessToken=${token}`)
-      .send({ status: "in-progress" });
+      .send({ status: "in_progress" });
 
     expect(res.status).toBe(403);
   });
@@ -78,10 +78,10 @@ describe("PATCH /spaces/:spaceId/tasks/:taskId (updateTask)", () => {
     const res = await request(app)
       .patch(`/api/spaces/${space._id}/tasks/${task._id}`)
       .set("Cookie", `accessToken=${token}`)
-      .send({ status: "in-progress" });
+      .send({ status: "in_progress" });
 
     expect(res.status).toBe(200);
-    expect(res.body.status).toBe("in-progress");
+    expect(res.body.status).toBe("in_progress");
   });
 
   test("Assigned viewer cannot update title", async () => {
@@ -121,12 +121,12 @@ describe("PATCH /spaces/:spaceId/tasks/:taskId (updateTask)", () => {
       .send({
         title: "New",
         description: "Updated",
-        status: "in-progress",
+        status: "in_progress",
       });
 
     expect(res.status).toBe(200);
     expect(res.body.title).toBe("New");
-    expect(res.body.status).toBe("in-progress");
+    expect(res.body.status).toBe("in_progress");
   });
 
   /**
@@ -150,7 +150,7 @@ describe("PATCH /spaces/:spaceId/tasks/:taskId (updateTask)", () => {
     expect(res.status).toBe(400);
   });
 
-  test("Cannot move done task back to in-progress", async () => {
+  test("Cannot move done task back to in_progress", async () => {
     const { user, token } = await createUserWithRole("editor", space._id);
 
     const task = await Task.create({
@@ -163,7 +163,7 @@ describe("PATCH /spaces/:spaceId/tasks/:taskId (updateTask)", () => {
     const res = await request(app)
       .patch(`/api/spaces/${space._id}/tasks/${task._id}`)
       .set("Cookie", `accessToken=${token}`)
-      .send({ status: "in-progress" });
+      .send({ status: "in_progress" });
 
     expect(res.status).toBe(400);
   });

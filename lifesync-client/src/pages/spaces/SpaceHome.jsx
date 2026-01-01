@@ -4,9 +4,7 @@ import SpaceEditor from '../../components/spaces/SpaceEditor';
  import useMySpaceRole from '../../app/hooks/useMySpaceRole';
 const SpaceHome = () => {
 const {spaceId} = useParams()
-console.log(spaceId)
   const {role,canEdit,isLoading}  = useMySpaceRole(spaceId);
-  console.log("role is ",role)
   if (isLoading) {
     return <div>Loading space...</div>;
   }

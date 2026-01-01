@@ -22,7 +22,7 @@ const taskSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["todo", "in-progress", "done"],
+      enum: ["todo", "in_progress", "done"],
       default: "todo",
     },
 
@@ -36,6 +36,8 @@ const taskSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
+        required : true,
+        default : null  
       },
     ],
 

@@ -22,8 +22,8 @@ export const API_PATHS = {
    TASK: {
       CREATE: (spaceId) => `/api/spaces/${spaceId}/tasks`,
       GET_TASK: (spaceId) => `/api/spaces/${spaceId}/tasks`,
-      UPDATE_TASK: (spaceId, taskId) => `/api/spaces/${spaceId}/tasks${taskId}`,
-      DELETE_TASK: (spaceId, taskId) => `/api/spaces/${spaceId}/tasks${taskId}`,
+      UPDATE_TASK: (spaceId, taskId) => `/api/spaces/${spaceId}/tasks/${taskId}`,
+      DELETE_TASK: (spaceId, taskId) => `/api/spaces/${spaceId}/tasks/${taskId}`,
 
 
    },

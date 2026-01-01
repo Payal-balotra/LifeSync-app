@@ -19,7 +19,6 @@ import AcceptInvitePage from "../components/spaces/AcceptInvitePage";
 
 // future pages
 import TasksPage from "../pages/tasks/TaskPage";
-import ActivityPage from "../pages/activity/ActivityPage";
 
 
 const router = createBrowserRouter([
@@ -57,7 +56,6 @@ const router = createBrowserRouter([
         children: [
           { index: true, element: <SpaceHome  /> },
           { path: "tasks", element: <TasksPage /> },
-          { path: "activity", element: <ActivityPage /> },
 
         ],
       },

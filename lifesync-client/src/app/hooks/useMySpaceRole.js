@@ -40,9 +40,7 @@ export default function useMySpaceRole(spaceId) {
   );
 
   const role = myMembership?.role;
-console.log("MEMBERS:", members);
-console.log("USER:", user);
-console.log("ROLE:", role);
+
 
   return {
     role, // "owner" | "editor" | "viewer"

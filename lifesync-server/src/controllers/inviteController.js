@@ -1,6 +1,6 @@
 const Invite = require("../models/Invite");
 const MemberShip = require("../models/MemberShip");
-const activityLogger = require("../utils/activityLogger");
+const {activityLogger} = require("../utils/activityLogger");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 /**

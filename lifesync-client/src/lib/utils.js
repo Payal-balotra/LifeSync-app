@@ -57,3 +57,14 @@ export function drawSelection(layer, textarea, start, end, color) {
   layer.appendChild(selection);
 }
 
+export function formatActivity(activity) {
+  const map = {
+    task_created: `created task "${activity.meta?.title}"`,
+    task_archived: `archived task "${activity.meta?.title}"`,
+    role_changed: `changed a role`,
+    member_added: `added a member`,
+  };
+
+  return map[activity.action] || activity.action.replace("_", " ");
+}
+
