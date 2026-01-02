@@ -36,7 +36,12 @@ export const API_PATHS = {
    },
    ACTIVITY: {
       GET_ACTIVITY_FEED: (spaceId) => `/api/spaces/${spaceId}/activity`
+   },
+   FLOW:{
+      GET_FLOW : (spaceId) => `/api/spaces/${spaceId}/flow`,
+      UPDATE_FLOW :(spaceId)=> `/api/spaces/${spaceId}/flow`
    }
+
 
 
 }

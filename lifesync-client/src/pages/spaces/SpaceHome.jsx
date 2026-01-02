@@ -9,7 +9,7 @@ const {spaceId} = useParams()
     return <div>Loading space...</div>;
   }
   return (
-    <div className="flex-1 p-4">
+    <div className="flex-1 h-full flex flex-col">
       <SpaceEditor
        spaceId={spaceId}
        role = {role}

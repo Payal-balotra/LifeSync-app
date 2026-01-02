@@ -182,51 +182,51 @@ export default function SpaceEditor({ spaceId ,role ,canEdit}) {
   }, [spaceId, user]);
 
   return (
-   <div className="relative w-full h-full flex flex-col">
-  
-  {/* 🔵 TYPING INDICATOR */}
-  {typingUsers.length > 0 && (
-    <div className="absolute top-0 left-0 w-full text-sm text-gray-500 px-2 py-1 bg-white z-10">
-      {typingUsers.join(", ")} {typingUsers.length === 1 ? "is" : "are"} typing...
+    <div className="relative w-full h-full flex flex-col bg-white">
+      
+      {/* 🔵 TYPING INDICATOR - Floating Glass */}
+      {typingUsers.length > 0 && (
+        <div className="absolute top-4 right-8 z-20 text-xs font-medium text-indigo-600 px-3 py-1.5 glass-panel rounded-full shadow-sm animate-pulse">
+          {typingUsers.join(", ")} {typingUsers.length === 1 ? "is" : "are"} typing...
+        </div>
+      )}
+
+      {/* EDITOR */}
+      <div className="flex-1 relative overflow-hidden">
+        <textarea
+          ref={textareaRef}
+          disabled={!canEdit}
+          className={`w-full h-full p-8 resize-none focus:outline-none font-sans text-base leading-7 text-slate-700 placeholder:text-slate-300 ${
+            !canEdit ? "bg-slate-50 cursor-not-allowed" : "bg-transparent"
+          }`}
+          placeholder={
+            canEdit
+              ? "Start typing your thoughts here..."
+              : "You have read-only access"
+          }
+        />
+        
+        {/* cursor overlay */}
+        <div
+          ref={cursorLayerRef}
+          className="absolute inset-0 pointer-events-none"
+        />
+      </div>
+
+      {/* INFO + ACTION BAR - Glassmorphism */}
+      <div className="flex items-center justify-between gap-4 text-xs text-slate-500 glass-panel border-t-0 p-3 mx-4 mb-4 rounded-xl">
+        <p className="leading-relaxed font-medium pl-2">
+          ✨ Live Collaboration
+        </p>
+        {canEdit && (
+          <button
+            className="shrink-0 text-xs font-semibold text-red-500 hover:text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-all cursor-pointer"
+            onClick={() => clearEditorRef.current?.()}
+          >
+            Clear editor
+          </button>
+        )}
+      </div>
     </div>
-  )}
-
-  {/* EDITOR */}
-  <textarea
-    ref={textareaRef}
-    disabled={!canEdit}
-     className={`w-full h-full border p-4 rounded resize-none ${
-    !canEdit ? "bg-gray-50 cursor-not-allowed" : ""
-  }`}
-  placeholder={
-    canEdit
-      ? "Start typing..."
-      : "You have read-only access"
-  }
-  />
-
-  {/* cursor overlay */}
-  <div
-    ref={cursorLayerRef}
-    className="absolute inset-0 pointer-events-none"
-  />
-
-  {/* INFO + ACTION BAR */}
-  <div className="flex items-center justify-between gap-4 text-xs text-gray-500 bg-gray-50 border-t border-gray-200 px-3 py-2">
-    <p className="leading-relaxed">
-      ✨ This editor is optimized for live sessions, helping teams think and write together in the moment.
-    </p>
-{canEdit && (
-    <button
-      className="shrink-0 text-xs font-medium text-red-200 hover:text-red-700 hover:bg-red-50 px-3 py-1.5 rounded-md transition cursor-pointer bg-red-500"
-      onClick={()=>clearEditorRef.current?.()}
-    >
-      Clear editor
-    </button>
-)}
-  </div>
-
-</div>
-
   );
 }

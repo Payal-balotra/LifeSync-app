@@ -18,6 +18,4 @@ router.delete("/:spaceId/members/:memberId",auth,removeMember)
 
 
 
-
-
 module.exports = router;

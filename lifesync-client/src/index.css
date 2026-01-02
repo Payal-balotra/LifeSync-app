@@ -1,9 +1,39 @@
 @import "tailwindcss";
 
+/* 1. Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-serif: "Playfair Display", serif;
+  
+  --color-glass-border: rgba(255, 255, 255, 0.2);
+  --color-glass-bg: rgba(255, 255, 255, 0.7);
+  --shadow-glass: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+}
+
+/* 2. Global Resets & Base */
 html,
 body,
 #root {
   height: 100%;
+  font-family: var(--font-sans);
+  background-color: #f8fafc; /* slate-50 equivalent but explicit */
+  color: #1e293b; /* slate-800 */
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+}
+
+/* 3. Utilities */
+.glass-panel {
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-glass-border);
+  box-shadow: var(--shadow-glass);
 }
 
 /* Remote cursor caret */
@@ -15,7 +45,7 @@ body,
   vertical-align: text-bottom;
   position: relative;
   background: var(--cursor-bg, #3B82F6);
-   pointer-events: none;
+  pointer-events: none;
 }
 
 /* Cursor name tooltip */
