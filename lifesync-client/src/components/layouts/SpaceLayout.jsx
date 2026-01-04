@@ -54,12 +54,46 @@ const SpaceLayout = () => {
   /* ------------------------------
      ESC key closes activity
      ------------------------------ */
+  /* ------------------------------
+     ESC key closes activity
+     ------------------------------ */
   useEffect(() => {
     if (!isActivityOpen) return;
     const handler = (e) => e.key === "Escape" && setIsActivityOpen(false);
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
   }, [isActivityOpen]);
+
+    /* ------------------------------
+     Real-time Member Removal
+     ------------------------------ */
+    useEffect(() => {
+        if (!spaceId || !user) return;
+        
+        // Join the space room
+        import("../../services/socket").then(({ socket }) => {
+            socket.emit("join-space", { spaceId });
+
+            const handleMemberRemoved = ({ userId, spaceId: eventSpaceId }) => {
+                 // Check if it's me and I'm in this space
+                if (eventSpaceId === spaceId && userId === user._id) {
+                    // Redirect to spaces dashboard
+                    import("react-hot-toast").then(({ toast }) => {
+                         toast.error("You have been removed from this space.");
+                    });
+                    // Force navigation
+                    window.location.href = "/app/spaces";
+                }
+            };
+
+            socket.on("member:removed", handleMemberRemoved);
+
+            return () => {
+                socket.off("member:removed", handleMemberRemoved);
+            }
+        });
+
+    }, [spaceId, user]);
 
   /* ------------------------------
      Loading state

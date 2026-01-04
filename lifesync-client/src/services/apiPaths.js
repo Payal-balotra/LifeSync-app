@@ -16,7 +16,8 @@ export const API_PATHS = {
       GET_ONE :(spaceId)=>`/api/spaces/${spaceId}`,
       GET_SPACE_MEMBERS: (spaceId) => `/api/spaces/${spaceId}/members`,
       UPDATE_MEMBER_ROLE: (spaceId, memberId) => `/api/spaces/${spaceId}/members/${memberId}`,
-      REMOVE_MEMBER: (spaceId, memberId) => `/api/spaces/${spaceId}/members/${memberId}`
+      REMOVE_MEMBER: (spaceId, memberId) => `/api/spaces/${spaceId}/members/${memberId}`,
+      DELETE_SPACE:(spaceId)=>`/api/spaces/${spaceId}`
 
    },
    TASK: {

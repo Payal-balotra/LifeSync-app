@@ -4,7 +4,6 @@ import api from "../../services/axios";
 import { API_PATHS } from "../../services/apiPaths";
 
 const InviteDialog = ({ spaceId, onClose, onSuccess }) => {
-  const [inviteOpen, setInviteOpen] = useState(false);
 
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("editor");

@@ -56,7 +56,7 @@ const SignupPage = () => {
 
     setLoading(true);
     try {
-      const response = await api.post(API_PATHS.AUTH.SIGNUP, {
+      const res = await api.post(API_PATHS.AUTH.SIGNUP, {
         name: formData.name,
         email: formData.email,
         password: formData.password,

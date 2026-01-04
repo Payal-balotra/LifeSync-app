@@ -31,4 +31,7 @@ async function activityLogger({
   return activity;
 }
 
-module.exports = { activityLogger, setSocketInstance };
+
+const getSocketInstance = () => io;
+
+module.exports = { activityLogger, setSocketInstance, getSocketInstance };

@@ -8,6 +8,9 @@ import { useState } from "react";
 import { Plus, Layers, Mail } from "lucide-react";
 import toast from "react-hot-toast";
 import { Skeleton } from "../../components/ui/Skeleton";
+import api from "../../services/axios";
+import { API_PATHS } from "../../services/apiPaths";
+
 
 const SpacesDashboard = () => {
   const navigate = useNavigate();
@@ -38,8 +41,26 @@ const SpacesDashboard = () => {
       </div>
     );
   }
+ const handleDelete = async (spaceId) => {
+  const confirmDelete = window.confirm(
+    "This will permanently delete the space. Continue?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    await api.delete(API_PATHS.SPACE.DELETE_SPACE(spaceId));
+    toast.success("Space deleted");
+    refetch(); // refresh list
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Failed to delete space");
+  }
+};
+
+
 
   return (
+
     <div className="max-w-7xl mx-auto p-6 space-y-8">
       {/* Header Section */}
       <div className="flex items-center justify-between">
@@ -71,8 +92,10 @@ const SpacesDashboard = () => {
           {spaces.map((m) => (
             <SpaceCard
               key={m._id}
+              role={m.role}
               space={m.spaceId}
               onClick={() => navigate(`/app/spaces/${m.spaceId._id}`)}
+              onDelete={()=>{handleDelete(m.spaceId._id)}}
             />
           ))}
         </div>

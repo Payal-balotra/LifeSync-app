@@ -12,14 +12,16 @@ const AcceptInvitePage = () => {
   const { user, loading } = useAuthStore();
 
   const [error, setError] = useState(null);
+  const isProcessing = React.useRef(false);
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || isProcessing.current) return;
     if (!user) {
       navigate(`/?invite=${token}`);
       return;
     }
     const acceptInvite = async () => {
+      isProcessing.current = true;
       try {
         const res = await axios.post(
           `${API_PATHS.INVITE.ACCEPT}?token=${token}`,
@@ -34,6 +36,7 @@ const AcceptInvitePage = () => {
       } catch (error) {
         console.error("Invite accept failed:", error);
         setError(error.response?.data?.message || "Failed to accept invite");
+        isProcessing.current = false;
         // navigate("/invalid-invite"); // Removed to show error on screen
       }
     };

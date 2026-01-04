@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 
 const memebershipSchema = new mongoose.Schema({
-    userId: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true,
@@ -15,8 +15,12 @@ const memebershipSchema = new mongoose.Schema({
   role: {
     type: String,
     enum: ["owner", "editor", "viewer"],
-    required:true
+    required: true
   },
-},{ timestamps: true })
+}, { timestamps: true })
 
-module.exports = mongoose.model("Membership",memebershipSchema);
+
+// Ensure a user can only be a member of a space once
+memebershipSchema.index({ userId: 1, spaceId: 1 }, { unique: true });
+
+module.exports = mongoose.model("Membership", memebershipSchema);

@@ -1,6 +1,6 @@
 const Invite = require("../models/Invite");
 const MemberShip = require("../models/MemberShip");
-const {activityLogger} = require("../utils/activityLogger");
+const { activityLogger } = require("../utils/activityLogger");
 const sendEmail = require("../utils/sendEmail");
 const crypto = require("crypto");
 /**
@@ -97,7 +97,7 @@ const acceptInvite = async (req, res) => {
       status: "pending",
       expiresAt: { $gt: new Date() },
     });
-
+    console.log("invate", invite);
     if (!invite) {
       return res.status(400).json({ message: "Invalid or expired invite" });
     }
@@ -112,6 +112,9 @@ const acceptInvite = async (req, res) => {
       userId: req.user._id,
       spaceId: invite.spaceId,
     });
+
+    console.log("existingMember", existingMember);
+
     if (existingMember) {
       invite.status = "accepted";
       invite.token = undefined;
@@ -122,12 +125,13 @@ const acceptInvite = async (req, res) => {
       });
     }
 
-
     await MemberShip.create({
+
       userId: req.user._id,
       spaceId: invite.spaceId,
       role: invite.role,
     });
+    console.log("membership created for this user ", req.user._id);
 
     invite.status = "accepted";
     invite.token = undefined;

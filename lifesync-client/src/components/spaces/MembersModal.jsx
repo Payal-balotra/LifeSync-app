@@ -1,7 +1,7 @@
 import React from "react";
 import { X, Shield, User } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../services/axios";
 import { API_PATHS } from "../../services/apiPaths";
 import { Skeleton } from "../ui/Skeleton";
@@ -14,6 +14,7 @@ import { useState } from "react";
 import useMySpaceRole from "../../app/hooks/useMySpaceRole";
 
 const MembersModal = ({ isOpen, onClose, spaceId }) => {
+  const queryClient = useQueryClient();
   const { data: members = [], isLoading } = useQuery({
     queryKey: ["space-members", spaceId],
     queryFn: async () => {
@@ -119,7 +120,9 @@ const MembersModal = ({ isOpen, onClose, spaceId }) => {
                     spaceId={spaceId}
                     member={removeMember}
                     onClose={() => setRemoveMember(null)}
-                    onSuccess={() => {/* Query invalidation happens automatically via parent if needed, or we can refetch here but React Query cache should update */}}
+                    onSuccess={() => {
+                      queryClient.invalidateQueries(["space-members", spaceId]);
+                    }}
                 />
             )}
 
@@ -128,7 +131,9 @@ const MembersModal = ({ isOpen, onClose, spaceId }) => {
                     spaceId={spaceId}
                     member={changeRoleMember}
                     onClose={() => setChangeRoleMember(null)}
-                    onSuccess={() => {/* Same here */}}
+                    onSuccess={() => {
+                      queryClient.invalidateQueries(["space-members", spaceId]);
+                    }}
                 />
             )}
 

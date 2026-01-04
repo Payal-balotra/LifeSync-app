@@ -1,8 +1,9 @@
 const Space = require("../models/Space");
 const Membership = require("../models/MemberShip");
 const mongoose = require("mongoose");
-const {activityLogger}  = require("../utils/activityLogger")
-
+const Task = require("../models/Task")
+const { activityLogger } = require("../utils/activityLogger")
+const Activity = require("../models/ActivityLog")
 const createSpace = async (req, res) => {
   const { name } = req.body;
   const existingSpace = await Space.findOne({
@@ -153,7 +154,7 @@ const removeMember = async (req, res) => {
     return res.status(403).json({ message: "Only owner can remove members" });
   }
 
-  const member = await Membership.findOne({ _id: memberId, spaceId });
+  const member = await Membership.findOne({ _id: memberId, spaceId }).populate("userId", "name");
   if (!member) {
     return res.status(404).json({ message: "Member not found in this space" });
   }
@@ -168,16 +169,35 @@ const removeMember = async (req, res) => {
   }
 
   await member.deleteOne();
-  await activityLogger({
-    space: spaceId,
-    user: req.user._id,
-    action: "member_removed",
-    entityType: "membership",
-    entityId: memberId,
-    meta: {
-      memberName: member.userId.name,
-    },
-  });
+
+  // Non-critical: Try to notify and log, but don't fail the request if this errors
+  try {
+    // Real-time update: notify space that member is removed
+    const { getSocketInstance } = require("../utils/activityLogger");
+    const io = getSocketInstance();
+    if (io) {
+      console.log(`Emitting member:removed for space ${spaceId}, user ${member.userId}`);
+      io.to(spaceId).emit("member:removed", {
+        spaceId,
+        userId: member.userId._id, // use the ID from the populated user
+        reason: "removed_by_owner"
+      });
+    }
+
+    await activityLogger({
+      space: spaceId,
+      user: req.user._id,
+      action: "member_removed",
+      entityType: "membership",
+      entityId: memberId,
+      meta: {
+        memberName: member.userId.name,
+      },
+    });
+  } catch (error) {
+    console.error("Post-removal notification/logging failed:", error);
+    // Suppress error so client gets success response for the deletion
+  }
 
   res.json({ message: "Member removed successfully" });
 };
@@ -209,6 +229,43 @@ const getSpaceById = async (req, res) => {
 
   res.status(200).json(space);
 };
+const deleteSpace = async (req, res) => {
+  try {
+    const { spaceId } = req.params;
+    const userId = req.user._id;
+
+    if (!mongoose.Types.ObjectId.isValid(spaceId)) {
+      return res.status(400).json({ message: "Invalid space ID" });
+    }
+
+    const membership = await Membership.findOne({
+      spaceId,
+      userId,
+    });
+
+    if (!membership) {
+      return res.status(403).json({ message: "Not a space member" });
+    }
+
+    if (membership.role !== "owner") {
+      return res
+        .status(403)
+        .json({ message: "Only owner can delete this space" });
+    }
+    await Promise.all([
+      Space.findByIdAndDelete(spaceId),
+      Membership.deleteMany({ spaceId }),
+      Task.deleteMany({ spaceId }),
+      Activity.deleteMany({ spaceId }),
+    ]);
+    res.json({ message: "Space deleted successfully" });
+  } catch (err) {
+    console.error("Delete space error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+
+
+}
 
 module.exports = {
   createSpace,
@@ -217,4 +274,5 @@ module.exports = {
   updateMemberRole,
   removeMember,
   getSpaceById,
+  deleteSpace
 };

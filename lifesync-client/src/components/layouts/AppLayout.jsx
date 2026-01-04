@@ -27,7 +27,7 @@ const AppLayout = () => {
       </header>
 
       {/* Main Content Area - Animated */}
-      <main className="flex-1 w-full overflow-hidden flex flex-col h-full relative">
+      <main className="flex-1 w-full overflow-y-auto flex flex-col h-full relative">
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
