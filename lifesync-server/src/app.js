@@ -6,6 +6,7 @@ const spaceRoutes = require("./routes/spaceRoutes")
 const inviteRoutes = require("./routes/inviteRoutes");
 const taskRoutes = require("./routes/taskRoutes")
 const flowRoutes = require("./routes/flowRoutes")
+const pollRoutes = require("./routes/pollRoutes")
 require("dotenv").config();
 const app = express();
 
@@ -31,6 +32,7 @@ app.use("/api/spaces",spaceRoutes)
 app.use("/api/invites",inviteRoutes);
 app.use("/api",taskRoutes);
 app.use("/api",flowRoutes)
+app.use("/api/polls",pollRoutes)
 
 
 module.exports = app;

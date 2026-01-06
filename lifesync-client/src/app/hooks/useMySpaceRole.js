@@ -24,7 +24,7 @@ export default function useMySpaceRole(spaceId) {
     enabled: isValidSpaceId && !!user,
   });
 
-  // ⛔ while loading, role is unknown
+  //  while loading, role is unknown
   if (isLoading || isFetching || !user) {
     return {
       role: undefined,

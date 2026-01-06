@@ -25,8 +25,6 @@ export const API_PATHS = {
       GET_TASK: (spaceId) => `/api/spaces/${spaceId}/tasks`,
       UPDATE_TASK: (spaceId, taskId) => `/api/spaces/${spaceId}/tasks/${taskId}`,
       DELETE_TASK: (spaceId, taskId) => `/api/spaces/${spaceId}/tasks/${taskId}`,
-
-
    },
    INVITE: {
       SEND: (spaceId) => `/api/invites/${spaceId}/invite`,
@@ -41,6 +39,11 @@ export const API_PATHS = {
    FLOW:{
       GET_FLOW : (spaceId) => `/api/spaces/${spaceId}/flow`,
       UPDATE_FLOW :(spaceId)=> `/api/spaces/${spaceId}/flow`
+   },
+   POLLS:{
+      CREATE_POLL : (spaceId)=>`/api/polls/spaces/${spaceId}/polls`,
+      GET_POLL : (spaceId)=>`/api/polls/spaces/${spaceId}/polls`,
+      VOTE_POLL: (pollId)=>`/api/polls/${pollId}/vote`
    }
 
 

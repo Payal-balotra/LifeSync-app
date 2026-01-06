@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink, Outlet, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import {
-  LayoutDashboard,
-  CheckSquare,
-  Activity,
-  Users,
-} from "lucide-react";
+import { LayoutDashboard, CheckSquare, Activity, Users } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import api from "../../services/axios";
@@ -15,6 +10,8 @@ import useAuthStore from "../../store/authStore";
 import { Skeleton } from "../../components/ui/Skeleton";
 import MembersModal from "../spaces/MembersModal";
 import ActivityFeed from "../../pages/activity/ActivityFeed";
+import toast from "react-hot-toast";
+import useSpaceSocket from "../../app/hooks/useSpaceSocket";
 
 const SpaceLayout = () => {
   const { spaceId } = useParams();
@@ -46,9 +43,7 @@ const SpaceLayout = () => {
   });
 
   const memberCount = members.length;
-  const myMembership = members.find(
-    (m) => m.userId?._id === user?._id
-  );
+  const myMembership = members.find((m) => m.userId?._id === user?._id);
   const myRole = myMembership?.role || "member";
 
   /* ------------------------------
@@ -64,36 +59,21 @@ const SpaceLayout = () => {
     return () => window.removeEventListener("keydown", handler);
   }, [isActivityOpen]);
 
-    /* ------------------------------
+  /* ------------------------------
      Real-time Member Removal
      ------------------------------ */
-    useEffect(() => {
-        if (!spaceId || !user) return;
-        
-        // Join the space room
-        import("../../services/socket").then(({ socket }) => {
-            socket.emit("join-space", { spaceId });
+ useSpaceSocket({
+  spaceId,
+  events: {
+    "member:removed": ({ userId, spaceId: eventSpaceId }) => {
+      if (eventSpaceId === spaceId && userId === user._id) {
+        toast.error("You have been removed from this space");
+        window.location.href = "/app/spaces";
+      }
+    },
+  },
+});
 
-            const handleMemberRemoved = ({ userId, spaceId: eventSpaceId }) => {
-                 // Check if it's me and I'm in this space
-                if (eventSpaceId === spaceId && userId === user._id) {
-                    // Redirect to spaces dashboard
-                    import("react-hot-toast").then(({ toast }) => {
-                         toast.error("You have been removed from this space.");
-                    });
-                    // Force navigation
-                    window.location.href = "/app/spaces";
-                }
-            };
-
-            socket.on("member:removed", handleMemberRemoved);
-
-            return () => {
-                socket.off("member:removed", handleMemberRemoved);
-            }
-        });
-
-    }, [spaceId, user]);
 
   /* ------------------------------
      Loading state
@@ -131,25 +111,25 @@ const SpaceLayout = () => {
 
   const sidebarVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
-      transition: { 
+      transition: {
         staggerChildren: 0.05,
-        delayChildren: 0.1
-      }
-    }
+        delayChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, x: -10 },
-    visible: { opacity: 1, x: 0 }
+    visible: { opacity: 1, x: 0 },
   };
 
   return (
     <div className="flex h-full w-full bg-slate-50/50 overflow-hidden gap-4 p-4 pt-0">
       {/* LEFT SIDEBAR - Glassmorphism */}
-      <motion.aside 
+      <motion.aside
         initial="hidden"
         animate="visible"
         variants={sidebarVariants}
@@ -165,10 +145,16 @@ const SpaceLayout = () => {
               {space?.name?.charAt(0)?.toUpperCase()}
             </motion.div>
             <div className="truncate flex-1">
-              <h1 className="font-serif font-bold text-lg truncate text-slate-800">{space?.name}</h1>
+              <h1 className="font-serif font-bold text-lg truncate text-slate-800">
+                {space?.name}
+              </h1>
               <p className="text-xs font-sans text-slate-500 flex items-center gap-1">
-                <span className="bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold">{myRole}</span>
-                <span>• {memberCount} member{memberCount !== 1 && "s"}</span>
+                <span className="bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded text-[10px] uppercase tracking-wider font-semibold">
+                  {myRole}
+                </span>
+                <span>
+                  • {memberCount} member{memberCount !== 1 && "s"}
+                </span>
               </p>
             </div>
           </div>
@@ -195,7 +181,13 @@ const SpaceLayout = () => {
                     className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-full"
                   />
                 )}
-                <LayoutDashboard className={`w-4 h-4 ${isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"}`} />
+                <LayoutDashboard
+                  className={`w-4 h-4 ${
+                    isActive
+                      ? "text-indigo-600"
+                      : "text-slate-400 group-hover:text-slate-600"
+                  }`}
+                />
                 <span className="relative z-10">Notes</span>
               </>
             )}
@@ -213,21 +205,27 @@ const SpaceLayout = () => {
           >
             {({ isActive }) => (
               <>
-                 {isActive && (
+                {isActive && (
                   <motion.div
                     layoutId="activeNavIndicator"
                     className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-full"
                   />
                 )}
-                <CheckSquare className={`w-4 h-4 ${isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"}`} />
+                <CheckSquare
+                  className={`w-4 h-4 ${
+                    isActive
+                      ? "text-indigo-600"
+                      : "text-slate-400 group-hover:text-slate-600"
+                  }`}
+                />
                 <span className="relative z-10">Tasks</span>
               </>
             )}
           </NavLink>
 
-           <div className="my-2 border-t border-slate-100/50 mx-4"></div>
+          <div className="my-2 border-t border-slate-100/50 mx-4"></div>
 
-           <NavLink
+          <NavLink
             to={`/app/spaces/${spaceId}/flow`}
             className={({ isActive }) =>
               `relative group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 overflow-hidden ${
@@ -239,14 +237,43 @@ const SpaceLayout = () => {
           >
             {({ isActive }) => (
               <>
-                 {isActive && (
+                {isActive && (
                   <motion.div
                     layoutId="activeNavIndicator"
                     className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-full"
                   />
                 )}
-                <Activity className={`w-4 h-4 ${isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"}`} />
+                <Activity
+                  className={`w-4 h-4 ${
+                    isActive
+                      ? "text-indigo-600"
+                      : "text-slate-400 group-hover:text-slate-600"
+                  }`}
+                />
                 <span className="relative z-10">Flow</span>
+              </>
+            )}
+          </NavLink>
+          <NavLink
+            to={`/app/spaces/${spaceId}/polls`}
+            className={({ isActive }) =>
+              `relative group flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                isActive
+                  ? "bg-indigo-50/50 text-indigo-700"
+                  : "text-slate-600 hover:bg-white/40"
+              }`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {isActive && (
+                  <motion.div
+                    layoutId="activeNavIndicator"
+                    className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600 rounded-r-full"
+                  />
+                )}
+                <CheckSquare className="w-4 h-4" />
+                <span>Polls</span>
               </>
             )}
           </NavLink>
@@ -259,13 +286,10 @@ const SpaceLayout = () => {
             <span className="relative z-10">Members</span>
           </button>
         </div>
-        
+
         {/* Sidebar Footer */}
-        <div className="p-4">
-           {/* Placeholder for future footer items */}
-        </div>
+        <div className="p-4">{/* Placeholder for future footer items */}</div>
       </motion.aside>
-      
 
       {/* MAIN CONTENT - Wrapped in motion for uniformity */}
       <main className="flex-1 flex flex-col glass-panel rounded-xl overflow-hidden shadow-sm relative">
@@ -283,32 +307,39 @@ const SpaceLayout = () => {
         </div>
 
         <div className="flex-1 overflow-hidden relative">
-           <Outlet />
+          <Outlet />
         </div>
       </main>
 
       {/* ACTIVITY OVERLAY PANEL */}
       <AnimatePresence>
         {isActivityOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex justify-end bg-black/20 backdrop-blur-sm"
             onClick={() => setIsActivityOpen(false)}
           >
-            <motion.div 
+            <motion.div
               initial={{ x: "100%", opacity: 0.5 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "100%", opacity: 0.5 }}
-              transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
+              transition={{
+                type: "spring",
+                damping: 30,
+                stiffness: 300,
+                mass: 0.8,
+              }}
               className="w-96 h-full bg-white/80 backdrop-blur-xl shadow-2xl flex flex-col border-l border-white/40 ring-1 ring-white/50"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between px-6 py-5 border-b border-indigo-100/50 bg-white/50">
                 <div className="flex items-center gap-2">
-                   <Activity className="w-4 h-4 text-indigo-500" />
-                   <h3 className="font-serif font-bold text-lg text-slate-800 tracking-tight">Activity Log</h3>
+                  <Activity className="w-4 h-4 text-indigo-500" />
+                  <h3 className="font-serif font-bold text-lg text-slate-800 tracking-tight">
+                    Activity Log
+                  </h3>
                 </div>
                 <button
                   onClick={() => setIsActivityOpen(false)}

@@ -30,14 +30,12 @@ const AcceptInvitePage = () => {
         );
 
         const spaceId = res.data.spaceId;
-
-        // 🚀 Redirect to space
+        //  Redirect to space
         navigate(`/app/spaces/${res.data.spaceId}`);
       } catch (error) {
         console.error("Invite accept failed:", error);
         setError(error.response?.data?.message || "Failed to accept invite");
         isProcessing.current = false;
-        // navigate("/invalid-invite"); // Removed to show error on screen
       }
     };
 
